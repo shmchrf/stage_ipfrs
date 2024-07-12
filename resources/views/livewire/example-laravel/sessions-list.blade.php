@@ -23,6 +23,7 @@
                 <button class="btn btn-secondary" onclick="showContents({{ $session->id }})" data-toggle="tooltip" title="Liste des étudiants">
                     <i class="material-icons opacity-10">group</i>
                 </button>
+                
                 <button class="btn btn-secondary" onclick="showProfContents({{ $session->id }})" data-toggle="tooltip" title="Liste des professeurs">
                     <i class="material-icons opacity-10">assignment_ind</i>
                 </button>

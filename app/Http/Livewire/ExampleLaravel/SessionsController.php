@@ -9,22 +9,191 @@ use App\Models\Sessions;
 use App\Models\Professeur;
 use App\Models\Etudiant;
 use App\Models\Paiement;
+use App\Models\PaiementProf;
+
 use App\Models\ModePaiement;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Exports\SessionsExport;
+use App\Models\Typeymntprofs;
 
 class SessionsController extends Component
 {
-    public function list_session()
-    {
+    // public function list_session()
+    // {
+    //     $sessions = Sessions::with('etudiants', 'formation')->paginate(4);
+    //     $formations = Formations::all();
+    //     $modes_paiement = ModePaiement::all();
+    //     $typeymntprofs = Typeymntprofs::all();
+    //     return view('livewire.example-laravel.sessions-management', compact('sessions', 'formations', 'modes_paiement', 'typeymntprofs'));
+    // }
+
+    public function list_session() {
         $sessions = Sessions::with('etudiants', 'formation')->paginate(4);
         $formations = Formations::all();
         $modes_paiement = ModePaiement::all();
-        return view('livewire.example-laravel.sessions-management', compact('sessions', 'formations', 'modes_paiement'));
+        $typeymntprofs = Typeymntprofs::all();
+        return view('livewire.example-laravel.sessions-management', compact('sessions', 'formations', 'modes_paiement', 'typeymntprofs'));
     }
+
+    public function searchProfByPhone(Request $request) {
+        $phone = $request->phone;
+        $professeur = Professeur::where('phone', $phone)->first();
+
+        if ($professeur) {
+            return response()->json(['professeur' => $professeur]);
+        } else {
+            return response()->json(['error' => 'Professeur non trouvé'], 404);
+        }
+    }
+
+    public function addProfToSession(Request $request, $sessionId) {
+        $request->validate([
+            'prof_id' => 'required|exists:professeurs,id',
+            'montant_paye' => 'required|numeric',
+            'mode_paiement' => 'required|exists:modes_paiement,id',
+            'date_paiement' => 'required|date',
+            'montant' => 'required|numeric',
+            'montant_a_paye' => 'required|numeric',
+            'typeymntprofs_id' => 'required|exists:typeymntprofs,id',
+        ]);
+    
+        try {
+            $session = Sessions::findOrFail($sessionId);
+            $profId = $request->prof_id;
+    
+            if ($session->professeurs->contains($profId)) {
+                return response()->json(['error' => 'Le professeur est déjà inscrit dans cette session.'], 400);
+            }
+    
+            $session->professeurs()->attach($profId, [
+                'date_paiement' => $request->date_paiement,
+            ]);
+    
+            $paiementProf = new PaiementProf([
+                'prof_id' => $profId,
+                'session_id' => $sessionId,
+                'montant' => $request->montant,
+                'montant_a_paye' => $request->montant_a_paye,
+                'montant_paye' => $request->montant_paye,
+                'mode_paiement_id' => $request->mode_paiement,
+                'date_paiement' => $request->date_paiement,
+                'typeymntprofs_id' => $request->typeymntprofs_id,
+            ]);
+            $paiementProf->save();
+    
+            return response()->json(['success' => 'Professeur et paiement ajoutés avec succès']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Session non trouvée.'], 404);
+        } catch (\Exception $e) {
+            Log::error('Error adding professor to session: ' . $e->getMessage());
+            return response()->json(['error' => 'Erreur lors de l\'ajout du professeur et du paiement: ' . $e->getMessage()], 500);
+        }
+    }
+    
+    
+
+    public function checkProfInSession(Request $request, $sessionId) {
+        $profId = $request->prof_id;
+        $session = Sessions::with('professeurs')->findOrFail($sessionId);
+
+        $isInSession = $session->professeurs->contains($profId);
+
+        return response()->json(['isInSession' => $isInSession]);
+    }
+
+    public function getProfSessionContents($sessionId) {
+        $session = Sessions::with(['professeurs' => function($query) {
+            $query->withPivot('date_paiement');
+        }, 'professeurs.paiements.mode', 'formation'])->find($sessionId);
+    
+        if (!$session) {
+            return response()->json(['error' => 'Session non trouvée'], 404);
+        }
+    
+        $professeurs = $session->professeurs->map(function($professeur) use ($session) {
+            $montantPaye = $professeur->paiements->where('session_id', $session->id)->sum('montant_paye');
+            $montant = $professeur->paiements->where('session_id', $session->id)->first()->montant ?? 0;
+            $resteAPayer = $montant - $montantPaye;
+    
+            return [
+                'id' => $professeur->id,
+                'nomprenom' => $professeur->nomprenom,
+                'phone' => $professeur->phone,
+                'wtsp' => $professeur->wtsp,
+                'montant' => $montant,
+                'montant_paye' => $montantPaye,
+                'reste_a_payer' => $resteAPayer,
+                'mode_paiement' => $professeur->paiements->where('session_id', $session->id)->first()->mode->nom ?? '',
+                'date_paiement' => $professeur->paiements->where('session_id', $session->id)->first()->date_paiement ?? '',
+            ];
+        });
+    
+        return response()->json([
+            'professeurs' => $professeurs,
+            'formation_price' => $session->formation->prix,
+        ]);
+    }
+    
+    
+    
+
+    public function addProfPaiement(Request $request, $sessionId) {
+        Log::info('Received data:', $request->all());
+
+        $request->validate([
+            'prof_id' => 'required|exists:professeurs,id',
+            'montant_paye' => 'required|numeric',
+            'mode_paiement' => 'required|exists:modes_paiement,id',
+            'date_paiement' => 'required|date',
+        ]);
+
+        try {
+            $professeur = Professeur::findOrFail($request->prof_id);
+            $session = Sessions::findOrFail($sessionId);
+
+            $paiement = new PaiementProf([
+                'prof_id' => $request->prof_id,
+                'session_id' => $sessionId,
+                'montant' => $request->montant,
+                'montant_a_paye' => $request->montant_a_paye,
+                'montant_paye' => $request->montant_paye,
+                'mode_paiement_id' => $request->mode_paiement,
+                'date_paiement' => $request->date_paiement,
+                'typeymntprofs_id' => $request->typeymntprofs_id,
+            ]);
+            $paiement->save();
+
+            return response()->json(['success' => 'Paiement ajouté avec succès']);
+        } catch (ModelNotFoundException $e) {
+            Log::error('Model not found: ' . $e->getMessage());
+            return response()->json(['error' => 'Session ou Professeur non trouvé.'], 404);
+        } catch (\Exception $e) {
+            Log::error('Error adding payment: ' . $e->getMessage());
+            return response()->json(['error' => 'Erreur lors de l\'ajout du paiement: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteProfFromSession($sessionId, $profId) {
+        try {
+            $session = Sessions::findOrFail($sessionId);
+            $session->professeurs()->detach($profId);
+
+            PaiementProf::where('session_id', $sessionId)->where('prof_id', $profId)->delete();
+
+            return response()->json(['success' => 'Professeur retiré de la session avec succès']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erreur lors de la suppression du professeur: ' . $e->getMessage()], 500);
+        }
+    }
+
+
+
+    
+
+
 
     public function addEtudiantToSession(Request $request, $sessionId, $etudiantId)
     {
@@ -123,39 +292,7 @@ class SessionsController extends Component
         }
     }
 
-    // public function addPaiement(Request $request, $sessionId)
-    // {
-    //     $request->validate([
-    //         'etudiant_id' => 'required|exists:etudiants,id',
-    //         'montant_paye' => 'required|numeric',
-    //         'mode_paiement' => 'required|exists:modes_paiement,id',
-    //         'date_paiement' => 'required|date',
-    //     ]);
-
-    //     try {
-    //         $etudiant = Etudiant::findOrFail($request->etudiant_id);
-    //         $session = Sessions::findOrFail($sessionId);
-
-    //         $paiement = new Paiement([
-    //             'etudiant_id' => $request->etudiant_id,
-    //             'session_id' => $sessionId,
-    //             'prix_reel' => $session->formation->prix,
-    //             'montant_paye' => $request->montant_paye,
-    //             'mode_paiement_id' => $request->mode_paiement,
-    //             'date_paiement' => $request->date_paiement,
-    //         ]);
-    //         $paiement->save();
-
-    //         return response()->json(['success' => 'Paiement ajouté avec succès']);
-    //     } catch (ModelNotFoundException $e) {
-    //         Log::error('Model not found: ' . $e->getMessage());
-    //         return response()->json(['error' => 'Session ou Étudiant non trouvé.'], 404);
-    //     } catch (\Exception $e) {
-    //         Log::error('Error adding payment: ' . $e->getMessage());
-    //         return response()->json(['error' => 'Erreur lors de l\'ajout du paiement: ' . $e->getMessage()], 500);
-    //     }
-    // }
-
+    
     public function addPaiement(Request $request, $sessionId)
     {
         Log::info('Received data:', $request->all()); // Log the received data
@@ -207,22 +344,22 @@ class SessionsController extends Component
             return response()->json(['error' => 'Erreur lors de la suppression de l\'étudiant: ' . $e->getMessage()], 500);
         }
     }
-    public function deleteProfContent($sessionId, $profId)
-{
-    try {
-        $session = Sessions::findOrFail($sessionId);
-        $prof = Professeur::findOrFail($profId);
+//     public function deleteProfContent($sessionId, $profId)
+// {
+//     try {
+//         $session = Sessions::findOrFail($sessionId);
+//         $prof = Professeur::findOrFail($profId);
 
-        if ($session && $prof) {
-            $session->profs()->detach($profId);
-            return response()->json(['success' => 'Professeur retiré de la Formation avec succès']);
-        } else {
-            return response()->json(['error' => 'Formation ou professeur non trouvé.'], 404);
-        }
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Erreur lors de la suppression du professeur : ' . $e->getMessage()], 500);
-    }
-}
+//         if ($session && $prof) {
+//             $session->profs()->detach($profId);
+//             return response()->json(['success' => 'Professeur retiré de la Formation avec succès']);
+//         } else {
+//             return response()->json(['error' => 'Formation ou professeur non trouvé.'], 404);
+//         }
+//     } catch (\Exception $e) {
+//         return response()->json(['error' => 'Erreur lors de la suppression du professeur : ' . $e->getMessage()], 500);
+//     }
+// }
 
 
 
@@ -264,30 +401,309 @@ class SessionsController extends Component
         return response()->json(['isInSession' => $isInSession]);
     }
 
-    public function getProfSessionContents($id)
-    {
-        $session = Sessions::with('professeurs')->find($id);
-        if ($session) {
-            return response()->json(['prof' => $session->professeurs]);
-        } else {
-            return response()->json(['error' => 'Formation non trouvée'], 404);
-        }
-    }
 
-    public function addProfToSession(Request $request, $sessionId)
-    {
-        $request->validate([
-            'prof_id' => 'required|exists:professeurs,id',
-        ]);
 
-        try {
-            $session = Sessions::findOrFail($sessionId);
-            $session->professeurs()->attach($request->prof_id);
-            return response()->json(['success' => 'Professeur ajouté à la formation avec succès']);
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
-        }
-    }
+
+    // public function searchProfByPhone(Request $request)
+    // {
+    //     $phone = $request->phone;
+    //     $professeur = Professeur::where('phone', $phone)->first();
+
+    //     if ($professeur) {
+    //         return response()->json(['professeur' => $professeur]);
+    //     } else {
+    //         return response()->json(['error' => 'Professeur non trouvé'], 404);
+    //     }
+    // }
+
+    // public function addProfToSession(Request $request, $sessionId)
+    // {
+    //     $request->validate([
+    //         'prof_id' => 'required|exists:professeurs,id',
+    //         'montant_paye' => 'required|numeric',
+    //         'mode_paiement' => 'required|exists:modes_paiement,id',
+    //         'date_paiement' => 'required|date',
+    //         'montant' => 'required|numeric',
+    //         'montant_a_paye' => 'required|numeric',
+    //         'typeymntprofs_id' => 'required|exists:typeymntprofs,id',
+    //     ]);
+
+    //     try {
+    //         $session = Sessions::findOrFail($sessionId);
+    //         $profId = $request->prof_id;
+
+    //         // Attach the professor to the session with the payment date
+    //         $session->professeurs()->attach($profId, [
+    //             'date_paiement' => $request->date_paiement,
+    //         ]);
+
+    //         // Create a new PaiementProf record
+    //         $paiementProf = new PaiementProf([
+    //             'prof_id' => $profId,
+    //             'session_id' => $sessionId,
+    //             'montant' => $request->montant,
+    //             'montant_a_paye' => $request->montant_a_paye,
+    //             'montant_paye' => $request->montant_paye,
+    //             'mode_paiement_id' => $request->mode_paiement,
+    //             'date_paiement' => $request->date_paiement,
+    //             'typeymntprofs_id' => $request->typeymntprofs_id,
+    //         ]);
+    //         $paiementProf->save();
+
+    //         return response()->json(['success' => 'Professeur et paiement ajoutés avec succès']);
+    //     } catch (ModelNotFoundException $e) {
+    //         return response()->json(['error' => 'Session non trouvée.'], 404);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error adding professor to session: ' . $e->getMessage());
+    //         return response()->json(['error' => 'Erreur lors de l\'ajout du professeur et du paiement: ' . $e->getMessage()], 500);
+    //     }
+    // }
+
+    // public function checkProfInSession(Request $request, $sessionId)
+    // {
+    //     $profId = $request->prof_id;
+    //     $session = Sessions::with('professeurs')->findOrFail($sessionId);
+
+    //     $isInSession = $session->professeurs->contains($profId);
+
+    //     return response()->json(['isInSession' => $isInSession]);
+    // }
+
+    // public function getProfSessionContents($sessionId)
+    // {
+    //     $session = Sessions::with(['professeurs' => function($query) {
+    //         $query->withPivot('date_paiement');
+    //     }, 'professeurs.paiements.mode', 'formation'])->find($sessionId);
+    
+    //     if (!$session) {
+    //         return response()->json(['error' => 'Session non trouvée'], 404);
+    //     }
+    
+    //     $professeurs = $session->professeurs->map(function($professeur) use ($session) {
+    //         $montantPaye = $professeur->paiements->where('session_id', $session->id)->sum('montant_paye');
+    //         $montant = $professeur->paiements->where('session_id', $session->id)->first()->montant ?? 0;
+    //         $resteAPayer = $montant - $montantPaye;
+    
+    //         return [
+    //             'id' => $professeur->id,
+    //             'nomprenom' => $professeur->nomprenom,
+    //             'phone' => $professeur->phone,
+    //             'wtsp' => $professeur->wtsp,
+    //             'montant' => $montant,
+    //             'montant_paye' => $montantPaye,
+    //             'reste_a_payer' => $resteAPayer,
+    //             'mode_paiement' => $professeur->paiements->where('session_id', $session->id)->first()->mode->nom ?? '',
+    //             'date_paiement' => $professeur->paiements->where('session_id', $session->id)->first()->date_paiement ?? '',
+    //         ];
+    //     });
+    
+    //     return response()->json([
+    //         'professeurs' => $professeurs,
+    //         'formation_price' => $session->formation->prix,
+    //     ]);
+    // }
+    
+
+    // public function addProfPaiement(Request $request, $sessionId)
+    // {
+    //     Log::info('Received data:', $request->all());
+
+    //     $request->validate([
+    //         'prof_id' => 'required|exists:professeurs,id',
+    //         'montant_paye' => 'required|numeric',
+    //         'mode_paiement' => 'required|exists:modes_paiement,id',
+    //         'date_paiement' => 'required|date',
+    //     ]);
+
+    //     try {
+    //         $professeur = Professeur::findOrFail($request->prof_id);
+    //         $session = Sessions::findOrFail($sessionId);
+
+    //         $paiement = new PaiementProf([
+    //             'prof_id' => $request->prof_id,
+    //             'session_id' => $sessionId,
+    //             'montant' => $request->montant,
+    //             'montant_a_paye' => $request->montant_a_paye,
+    //             'montant_paye' => $request->montant_paye,
+    //             'mode_paiement_id' => $request->mode_paiement,
+    //             'date_paiement' => $request->date_paiement,
+    //             'typeymntprofs_id' => $request->typeymntprofs_id,
+    //         ]);
+    //         $paiement->save();
+
+    //         return response()->json(['success' => 'Paiement ajouté avec succès']);
+    //     } catch (ModelNotFoundException $e) {
+    //         Log::error('Model not found: ' . $e->getMessage());
+    //         return response()->json(['error' => 'Session ou Professeur non trouvé.'], 404);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error adding payment: ' . $e->getMessage());
+    //         return response()->json(['error' => 'Erreur lors de l\'ajout du paiement: ' . $e->getMessage()], 500);
+    //     }
+    // }
+
+    // public function deleteProfFromSession($sessionId, $profId)
+    // {
+    //     try {
+    //         $session = Sessions::findOrFail($sessionId);
+    //         $session->professeurs()->detach($profId);
+
+    //         PaiementProf::where('session_id', $sessionId)->where('prof_id', $profId)->delete();
+
+    //         return response()->json(['success' => 'Professeur retiré de la session avec succès']);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Erreur lors de la suppression du professeur: ' . $e->getMessage()], 500);
+    //     }
+    // }
+
+    // public function searchProfByPhone(Request $request)
+    // {
+    //     $phone = $request->phone;
+    //     $professeur = Professeur::where('phone', $phone)->first();
+
+    //     if ($professeur) {
+    //         return response()->json(['professeur' => $professeur]);
+    //     } else {
+    //         return response()->json(['error' => 'Professeur non trouvé'], 404);
+    //     }
+    // }
+
+    // public function addProfToSession(Request $request, $sessionId)
+    // {
+    //     $request->validate([
+    //         'prof_id' => 'required|exists:professeurs,id',
+    //         'montant_paye' => 'required|numeric',
+    //         'mode_paiement' => 'required|exists:modes_paiement,id',
+    //         'date_paiement' => 'required|date',
+    //         'montant' => 'required|numeric',
+    //         'montant_a_paye' => 'required|numeric',
+    //         'typeymntprofs_id' => 'required|exists:typeymntprofs,id',
+    //     ]);
+
+    //     try {
+    //         $session = Sessions::findOrFail($sessionId);
+    //         $profId = $request->prof_id;
+
+    //         // Attach the professor to the session with the payment date
+    //         $session->professeurs()->attach($profId, [
+    //             'date_paiement' => $request->date_paiement,
+    //         ]);
+
+    //         // Create a new PaiementProf record
+    //         $paiementProf = new PaiementProf([
+    //             'prof_id' => $profId,
+    //             'session_id' => $sessionId,
+    //             'montant' => $request->montant,
+    //             'montant_a_paye' => $request->montant_a_paye,
+    //             'montant_paye' => $request->montant_paye,
+    //             'mode_paiement_id' => $request->mode_paiement,
+    //             'date_paiement' => $request->date_paiement,
+    //             'typeymntprofs_id' => $request->typeymntprofs_id,
+    //         ]);
+    //         $paiementProf->save();
+
+    //         return response()->json(['success' => 'Professeur et paiement ajoutés avec succès']);
+    //     } catch (ModelNotFoundException $e) {
+    //         return response()->json(['error' => 'Session non trouvée.'], 404);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error adding professor to session: ' . $e->getMessage());
+    //         return response()->json(['error' => 'Erreur lors de l\'ajout du professeur et du paiement: ' . $e->getMessage()], 500);
+    //     }
+    // }
+
+    // public function checkProfInSession(Request $request, $sessionId)
+    // {
+    //     $profId = $request->prof_id;
+    //     $session = Sessions::with('professeurs')->findOrFail($sessionId);
+
+    //     $isInSession = $session->professeurs->contains($profId);
+
+    //     return response()->json(['isInSession' => $isInSession]);
+    // }
+
+    // public function getProfSessionContents($sessionId)
+    // {
+    //     $session = Sessions::with(['professeurs' => function($query) {
+    //         $query->withPivot('date_paiement');
+    //     }, 'professeurs.paiements.mode', 'formation'])->find($sessionId);
+
+    //     if (!$session) {
+    //         return response()->json(['error' => 'Session non trouvée'], 404);
+    //     }
+
+    //     $professeurs = $session->professeurs->map(function($professeur) use ($session) {
+    //         $montantPaye = $professeur->paiements->where('session_id', $session->id)->sum('montant_paye');
+    //         $montant = $professeur->paiements->where('session_id', $session->id)->first()->montant ?? 0;
+    //         $resteAPayer = $montant - $montantPaye;
+
+    //         return [
+    //             'id' => $professeur->id,
+    //             'nomprenom' => $professeur->nomprenom,
+    //             'phone' => $professeur->phone,
+    //             'wtsp' => $professeur->wtsp,
+    //             'montant' => $montant,
+    //             'montant_paye' => $montantPaye,
+    //             'reste_a_payer' => $resteAPayer,
+    //             'mode_paiement' => $professeur->paiements->where('session_id', $session->id)->first()->mode->nom ?? '',
+    //             'date_paiement' => $professeur->paiements->where('session_id', $session->id)->first()->date_paiement ?? '',
+    //         ];
+    //     });
+
+    //     return response()->json([
+    //         'professeurs' => $professeurs,
+    //         'formation_price' => $session->formation->prix,
+    //     ]);
+    // }
+
+    // public function addProfPaiement(Request $request, $sessionId)
+    // {
+    //     Log::info('Received data:', $request->all()); // Log the received data
+    
+    //     $request->validate([
+    //         'prof_id' => 'required|exists:professeurs,id',
+    //         'montant_paye' => 'required|numeric',
+    //         'mode_paiement' => 'required|exists:modes_paiement,id',
+    //         'date_paiement' => 'required|date',
+    //     ]);
+    
+    //     try {
+    //         $professeur = Professeur::findOrFail($request->prof_id);
+    //         $session = Sessions::findOrFail($sessionId);
+    
+    //         $paiement = new PaiementProf([
+    //             'prof_id' => $request->prof_id,
+    //             'session_id' => $sessionId,
+    //             'montant' => $request->montant,
+    //             'montant_a_paye' => $request->montant_a_paye,
+    //             'montant_paye' => $request->montant_paye,
+    //             'mode_paiement_id' => $request->mode_paiement,
+    //             'date_paiement' => $request->date_paiement,
+    //             'typeymntprofs_id' => $request->typeymntprofs_id,
+    //         ]);
+    //         $paiement->save();
+    
+    //         return response()->json(['success' => 'Paiement ajouté avec succès']);
+    //     } catch (ModelNotFoundException $e) {
+    //         Log::error('Model not found: ' . $e->getMessage());
+    //         return response()->json(['error' => 'Session ou Professeur non trouvé.'], 404);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error adding payment: ' . $e->getMessage());
+    //         return response()->json(['error' => 'Erreur lors de l\'ajout du paiement: ' . $e->getMessage()], 500);
+    //     }
+    // }
+
+    // public function deleteProfFromSession($sessionId, $profId)
+    // {
+    //     try {
+    //         $session = Sessions::findOrFail($sessionId);
+    //         $session->professeurs()->detach($profId);
+
+    //         PaiementProf::where('session_id', $sessionId)->where('prof_id', $profId)->delete();
+
+    //         return response()->json(['success' => 'Professeur retiré de la session avec succès']);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Erreur lors de la suppression du professeur: ' . $e->getMessage()], 500);
+    //     }
+    // }
 
     public function store(Request $request)
     {

@@ -28,4 +28,8 @@ class Professeur extends Model
     {
         return $this->belongsToMany(Sessions::class, 'prof_session', 'prof_id', 'session_id');
     }
+    public function paiements()
+    {
+        return $this->hasMany(PaiementProf::class, 'prof_id');
+    }
 }

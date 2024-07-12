@@ -50,7 +50,36 @@ Route::get('/', function(){
     return redirect('sign-in');
 });
 
+// Add professor to session
+// Route::post('/sessions/{sessionId}/profs', [SessionsController::class, 'addProfToSession'])->name('sessions.addProfToSession');
 
+// // Add payment for professor
+// Route::post('/sessions/{sessionId}/paiements_prof', [SessionsController::class, 'addProfPaiement'])->name('sessions.addProfPaiement');
+
+// // Show professors in a session
+// Route::get('/sessions/{sessionId}/profs', [SessionsController::class, 'showProfContents'])->name('sessions.showProfContents');
+
+// // Delete professor from session
+// Route::delete('/sessions/{sessionId}/profs/{profId}', [SessionsController::class, 'deleteProfFromSession'])->name('sessions.deleteProfFromSession');
+
+// // Search professor by phone
+// Route::get('/profs/search', [SessionsController::class, 'searchProfByPhone'])->name('profs.search');
+
+// // Show session details
+// Route::get('/sessions/{sessionId}/details', [SessionsController::class, 'getSessionDetails'])->name('sessions.details');
+
+// Route::get('/profs/search', [ProfesseurController::class, 'searchByPhoneProf'])->name('profs.search');
+// Route::post('/sessions/{sessionId}/profs', [SessionsController::class, 'addProfToSession'])->name('sessions.addProf');
+// Route::post('/sessions/{sessionId}/paiements_prof', [SessionsController::class, 'addProfPaiement'])->name('sessions.addProfPaiement');
+// Route::delete('/sessions/{sessionId}/profs/{profId}', [SessionsController::class, 'deleteProfFromSession'])->name('sessions.deleteProf');
+
+Route::post('/professeur/search', [SessionsController::class, 'searchProfByPhone'])->name('professeur.search');
+Route::post('/sessions/{sessionId}/check-prof', [SessionsController::class, 'checkProfInSession']);
+Route::post('/sessions/{sessionId}/profs/{profId}/add', [SessionsController::class, 'addProfToSession']);
+Route::get('/sessions/{sessionId}/profs/{profId}/details', [SessionsController::class, 'getProfSessionContents']);
+Route::post('/sessions/{sessionId}/paiements', [SessionsController::class, 'addProfPaiement']);
+Route::delete('/sessions/{sessionId}/profs/{profId}', [SessionsController::class, 'deleteProfFromSession']);
+Route::get('/sessions/{sessionId}/profcontents', [SessionsController::class, 'getProfSessionContents']);
 
 
 
