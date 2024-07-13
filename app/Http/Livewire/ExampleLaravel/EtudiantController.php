@@ -24,17 +24,7 @@ class EtudiantController extends Component
         return view('livewire.example-laravel.etudiant-management', compact('etudiants', 'countries'));
     }
 
-    public function searchByPhone(Request $request)
-    {
-        $phone = $request->phone;
-        $etudiant = Etudiant::where('phone', $phone)->first();
 
-        if ($etudiant) {
-            return response()->json(['etudiant' => $etudiant]);
-        } else {
-            return response()->json(['error' => 'Étudiant non trouvé'], 404);
-        }
-    }
 
     public function addStudentToSession(Request $request, $sessionId)
     {
@@ -75,56 +65,6 @@ class EtudiantController extends Component
         }
     }
 
-    public function showAddStudentModal($sessionId)
-    {
-        $modes_paiement = ModePaiement::all();
-        return view('add_student_modal', compact('modes_paiement', 'sessionId'));
-    }
-
-//     public function store(Request $request)
-// {
-//     $request->validate([
-//         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-//         'nni' => 'required|digits:10|integer|gt:0',
-//         'nomprenom' => 'required|string',
-//         'diplome' => 'nullable|string',
-//         'genre' => 'required|string',
-//         'lieunaissance' => 'nullable|string',
-//         'adress' => 'nullable|string',
-//         'datenaissance' => 'nullable|date',
-//         'email' => 'nullable|email',
-//         'phone' => 'required|digits:8|integer|gt:0',
-//         'wtsp' => 'nullable|integer',
-//         'country_id' => 'required|exists:countries,id',
-//     ]);
-
-//     try {
-//         $imageName = $request->hasFile('image') ? time() . '.' . $request->image->extension() : null;
-
-//         if ($imageName) {
-//             $request->image->move(public_path('images'), $imageName);
-//         }
-
-//         $etudiant = Etudiant::create([
-//             'image' => $imageName,
-//             'nni' => $request->nni,
-//             'nomprenom' => $request->nomprenom,
-//             'diplome' => $request->diplome,
-//             'genre' => $request->genre,
-//             'lieunaissance' => $request->lieunaissance,
-//             'adress' => $request->adress,
-//             'datenaissance' => $request->datenaissance,
-//             'email' => $request->email,
-//             'phone' => $request->phone,
-//             'wtsp' => $request->wtsp,
-//             'country_id' => $request->country_id,
-//         ]);
-
-//         return response()->json(['success' => 'Étudiant créé avec succès', 'etudiant' => $etudiant]);
-//     } catch (\Throwable $th) {
-//         return response()->json(['error' => $th->getMessage()], 500);
-//     }
-// }
 
 
 public function store(Request $request)

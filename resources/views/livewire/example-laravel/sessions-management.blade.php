@@ -5,8 +5,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
@@ -53,39 +51,38 @@
                 <button type="button" class="btn btn-primary" onclick="searchStudentByPhone()">Rechercher</button>
                 <div id="student-search-results"></div>
                 <div id="payment-form" style="display:none;">
-                <div class="row mb-3">
-                    <div class="form-group col-md-4">
-                        <label for="formation-price" class="form-label">Prix Programme:</label>
-                        <input type="text" class="form-control" id="formation-price" readonly>
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label for="prix-reel" class="form-label">Prix Réel:</label>
-                        <input type="text" class="form-control" id="prix-reel" placeholder="Entrez le prix réel">
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label for="montant-paye" class="form-label">Montant Payé:</label>
-                        <input type="text" class="form-control" id="montant-paye" placeholder="Entrez le montant payé">
-                    </div>
+                    <div class="row mb-3">
+                        <div class="form-group col-md-4">
+                            <label for="formation-price" class="form-label">Prix Programme:</label>
+                            <input type="text" class="form-control" id="formation-price" readonly>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="prix-reel" class="form-label">Prix Réel:</label>
+                            <input type="text" class="form-control" id="prix-reel" placeholder="Entrez le prix réel">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="montant-paye" class="form-label">Montant Payé:</label>
+                            <input type="text" class="form-control" id="montant-paye" placeholder="Entrez le montant payé">
+                        </div>
                     </div>
                     <div class="row mb-2">
-                    <div class="form-group col-md-6">
-                        <label for="mode-paiement" class="form-label">Mode de Paiement:</label>
-                        <select class="form-control" id="mode-paiement">
-                            @foreach ($modes_paiement as $mode)
-                                <option value="{{ $mode->id }}">{{ $mode->nom }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="date-paiement" class="form-label">Date de Paiement:</label>
-                        <input type="date" class="form-control" id="date-paiement">
-                    </div>
+                        <div class="form-group col-md-6">
+                            <label for="mode-paiement" class="form-label">Mode de Paiement:</label>
+                            <select class="form-control" id="mode-paiement">
+                                @foreach ($modes_paiement as $mode)
+                                    <option value="{{ $mode->id }}">{{ $mode->nom }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="date-paiement" class="form-label">Date de Paiement:</label>
+                            <input type="date" class="form-control" id="date-paiement">
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-info" onclick="addEtudiantAndPaiement()">Ajouter Etudiant et Paiement</button>
-
+                <button type="button" class="btn btn-info" onclick="addEtudiantAndPaiement()">Ajouter Etudiant et Paiement</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
         </div>
@@ -111,30 +108,26 @@
                     <input type="text" class="form-control" id="nouveau-montant-paye" placeholder="Entrez le montant payé">
                 </div>
                 <div class="form-group">
-                        <label for="mode-paiement" class="form-label">Mode de Paiement:</label>
-                        <select class="form-control" id="mode-paiement">
-                            @foreach ($modes_paiement as $mode)
-                                <option value="{{ $mode->id }}">{{ $mode->nom }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-    <label for="date-paiement" class="form-label">Date de Paiement:</label>
-    <input type="date" class="form-control" id="date-paiement" name="date_paiement">
-</div>
-
-
-
-                <button type="button" class="btn btn-primary" onclick="addPaiement()">Ajouter Paiement</button>
+                    <label for="mode-paiement" class="form-label">Mode de Paiement:</label>
+                    <select class="form-control" id="mode-paiement">
+                        @foreach ($modes_paiement as $mode)
+                            <option value="{{ $mode->id }}">{{ $mode->nom }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date-paiement" class="form-label">Date de Paiement:</label>
+                    <input type="date" class="form-control" id="date-paiement" name="date_paiement">
+                </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-info" onclick="addPaiement()">Ajouter Paiement</button>
+
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
         </div>
     </div>
 </div>
-
-
 
 <!-- Add Professor Modal -->
 <div class="modal fade" id="profAddModal" tabindex="-1" aria-labelledby="profAddModalLabel" aria-hidden="true">
@@ -172,7 +165,7 @@
                             <input type="text" class="form-control" id="prof-montant_a_paye" placeholder="Entrez le montant à payer">
                         </div>
                     </div>
-                    <div class="row mb-3">                       
+                    <div class="row mb-3">
                         <div class="form-group col-md-4">
                             <label for="prof-montant_paye" class="form-label">Montant Payé:</label>
                             <input type="text" class="form-control" id="prof-montant_paye" placeholder="Entrez le montant payé">
@@ -201,7 +194,6 @@
 </div>
 
 
-<!-- Add Professor Payment Modal -->
 <div class="modal fade" id="profPaiementAddModal" tabindex="-1" aria-labelledby="profPaiementAddModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -231,9 +223,9 @@
                     <label for="prof-date-paiement" class="form-label">Date de Paiement:</label>
                     <input type="date" class="form-control" id="prof-date-paiement" name="date_paiement">
                 </div>
-                <button type="button" class="btn btn-primary" onclick="addProfPaiement()">Ajouter Paiement</button>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-info" onclick="addProfPaiement()">Ajouter Paiement</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
         </div>
@@ -245,140 +237,8 @@
 
 
 
-
-
-<!-- Add Professor Modal -->
-<!-- <div class="modal fade" id="profAddModal" tabindex="-1" aria-labelledby="profAddModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="profAddModalLabel">Ajouter un Professeur à la formation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="new-prof-session_id">
-                <div class="form-group">
-                    <label for="prof-phone-search" class="form-label">Numéro de téléphone du Professeur:</label>
-                    <input type="text" class="form-control" id="prof-phone-search" placeholder="Entrez le numéro de téléphone">
-                </div>
-                <button type="button" class="btn btn-primary" onclick="searchProfByPhone()">Rechercher</button>
-                <div id="prof-search-results"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div> -->
-
-
-<!-- Add Professor Modal -->
-<!-- <div class="modal fade" id="profAddModal" tabindex="-1" aria-labelledby="profAddModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="profAddModalLabel">Ajouter un professeur à la session</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="new-prof-session_id">
-                <div class="form-group">
-                    <label for="prof-phone-search" class="form-label">Numéro de téléphone du professeur:</label>
-                    <input type="text" class="form-control" id="prof-phone-search" placeholder="Entrez le numéro de téléphone">
-                </div>
-                <button type="button" class="btn btn-primary" onclick="searchProfByPhone()">Rechercher</button>
-                <div id="prof-search-results"></div>
-                <div id="prof-payment-form" style="display:none;">
-                    <div class="row mb-3">
-                        <div class="form-group col-md-4">
-                            <label for="prof-montant" class="form-label">Montant:</label>
-                            <input type="text" class="form-control" id="prof-montant" placeholder="Entrez le montant">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="prof-montant_a_paye" class="form-label">Montant à Payer:</label>
-                            <input type="text" class="form-control" id="prof-montant_a_paye" placeholder="Entrez le montant à payer">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="prof-montant_paye" class="form-label">Montant Payé:</label>
-                            <input type="text" class="form-control" id="prof-montant_paye" placeholder="Entrez le montant payé">
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="form-group col-md-6">
-                            <label for="prof-mode-paiement" class="form-label">Mode de Paiement:</label>
-                            <select class="form-control" id="prof-mode-paiement">
-                                @foreach ($modes_paiement as $mode)
-                                    <option value="{{ $mode->id }}">{{ $mode->nom }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="prof-date-paiement" class="form-label">Date de Paiement:</label>
-                            <input type="date" class="form-control" id="prof-date-paiement">
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="form-group col-md-6">
-                            <label for="prof-typeymntprofs" class="form-label">Type de Paiement:</label>
-                            <select class="form-control" id="prof-typeymntprofs">
-                                @foreach ($typeymntprofs as $type)
-                                    <option value="{{ $type->id }}">{{ $type->type }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-info" onclick="addProfAndPaiement()">Ajouter Professeur et Paiement</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div> -->
-
-<!-- Add Professor Payment Modal -->
-<!-- <div class="modal fade" id="profPaiementAddModal" tabindex="-1" aria-labelledby="profPaiementAddModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="profPaiementAddModalLabel">Ajouter un Paiement</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="prof-id">
-                <input type="hidden" id="prof-session-id">
-                <input type="hidden" id="prof-montant">
-                <input type="hidden" id="prof-montant_a_paye">
-                <input type="hidden" id="prof-reste-a-payer">
-                <div class="form-group">
-                    <label for="prof-nouveau-montant-paye" class="form-label">Nouveau Montant Payé:</label>
-                    <input type="text" class="form-control" id="prof-nouveau-montant-paye" placeholder="Entrez le montant payé">
-                </div>
-                <div class="form-group">
-                    <label for="prof-mode-paiement" class="form-label">Mode de Paiement:</label>
-                    <select class="form-control" id="prof-mode-paiement">
-                        @foreach ($modes_paiement as $mode)
-                            <option value="{{ $mode->id }}">{{ $mode->nom }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="prof-date-paiement" class="form-label">Date de Paiement:</label>
-                    <input type="date" class="form-control" id="prof-date-paiement" name="date_paiement">
-                </div>
-                <button type="button" class="btn btn-primary" onclick="addProfPaiement()">Ajouter Paiement</button>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div> -->
-
-
 <div id="formationContentContainer" style="display:none;">
-    <center><h4>Liste des etudiants</h4> </center>
+    <center><h4>Liste des étudiants</h4></center>
     <div id="formationContents"></div>
 </div>
 
@@ -386,6 +246,7 @@
     <center><h4>Liste des Professeurs</h4></center>
     <div id="formationProfContents"></div>
 </div>
+
 
 <div class="container-fluid py-4">
     <div class="row">
@@ -426,11 +287,14 @@
     </div>
 </div>
 
+
+
+<!-- Add Session Modal -->
 <div class="modal fade" id="sessionAddModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Ajouter une nouveau Formation</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Ajouter une nouvelle Formation</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -455,7 +319,7 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-6">
-                            <label for="date_debut" class="form-label required">Date debut:</label>
+                            <label for="date_debut" class="form-label required">Date début:</label>
                             <input type="date" class="form-control" id="new-session-date_debut" name="date_debut">
                             <div class="text-danger" id="date_debut-warning"></div>
                         </div>
@@ -475,6 +339,7 @@
     </div>
 </div>
 
+<!-- Edit Session Modal -->
 <div class="modal fade" id="sessionEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -505,7 +370,7 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-6">
-                            <label for="date_debut" class="form-label required">Date debut :</label>
+                            <label for="date_debut" class="form-label required">Date début :</label>
                             <input type="date" class="form-control" id="session-date_debut" name="date_debut">
                             <div class="text-danger" id="edit-date_debut-warning"></div>
                         </div>
@@ -525,8 +390,8 @@
     </div>
 </div>
 
-
 <script type="text/javascript">
+
 $(document).ready(function () {
     $.ajaxSetup({
         headers: {
@@ -534,22 +399,28 @@ $(document).ready(function () {
         }
     });
 
+    function getSessionDates(sessionId) {
+        return $.ajax({
+            url: `/sessions/${sessionId}/dates`,
+            type: 'GET'
+        });
+    }
+
     $(function () {
-                $('[data-toggle="tooltip"]').tooltip();
-            });
+        $('[data-toggle="tooltip"]').tooltip();
+    });
 
     $('#search_bar').on('keyup', function(){
-            var query = $(this).val();
-            $.ajax({
-                url: "{{ route('search6') }}",
-                type: "GET",
-                data: {'search6': query},
-                success: function(data){
-                    $('#sessions-table').html(data.html);
-                }
-            });
+        var query = $(this).val();
+        $.ajax({
+            url: "{{ route('search6') }}",
+            type: "GET",
+            data: {'search6': query},
+            success: function(data){
+                $('#sessions-table').html(data.html);
+            }
         });
-
+    });
 
     $("#add-new-session").click(function(e){
         e.preventDefault();
@@ -618,47 +489,46 @@ $(document).ready(function () {
     });
 
     $('body').on('click', '#session-update', function () {
-    var id = $('#session-id').val();
-    var formData = new FormData($('#session-edit-form')[0]);
+        var id = $('#session-id').val();
+        var formData = new FormData($('#session-edit-form')[0]);
 
-    $.ajax({
-        url: "{{ route('session.update', '') }}/" + id,
-        type: 'POST',
-        dataType: 'json',
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-            'X-HTTP-Method-Override': 'PUT'
-        },
-        success: function(response) {
-            $('#sessionEditModal').modal('hide');
-            setTimeout(function () {
-                location.reload();
-            }, 1000);
-            if (response.success) {
-                iziToast.success({
-                    message: response.success,
-                    position: 'topRight'
-                });
-            } else {
-                iziToast.error({
-                    message: response.error,
-                    position: 'topRight',
-                });
+        $.ajax({
+            url: "{{ route('session.update', '') }}/" + id,
+            type: 'POST',
+            dataType: 'json',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-HTTP-Method-Override': 'PUT'
+            },
+            success: function(response) {
+                $('#sessionEditModal').modal('hide');
+                setTimeout(function () {
+                    location.reload();
+                }, 1000);
+                if (response.success) {
+                    iziToast.success({
+                        message: response.success,
+                        position: 'topRight'
+                    });
+                } else {
+                    iziToast.error({
+                        message: response.error,
+                        position: 'topRight',
+                    });
+                }
+            },
+            error: function(xhr) {
+                var errors = xhr.responseJSON.errors;
+                if (errors) {
+                    $.each(errors, function(key, value) {
+                        $('#' + key + '-warning').text(value[0]);
+                    });
+                }
             }
-        },
-        error: function(xhr) {
-            var errors = xhr.responseJSON.errors;
-            if (errors) {
-                $.each(errors, function(key, value) {
-                    $('#' + key + '-warning').text(value[0]);
-                });
-            }
-        }
+        });
     });
-});
-
 
     $('body').on('click', '#delete-session', function (e) {
         e.preventDefault();
@@ -739,12 +609,10 @@ $(document).ready(function () {
         }
     }
 
-    
-
     window.loadFormationDetails = function() {
         const sessionId = $('#new-student-session_id').val();
         $.ajax({
-            url: `{{ route("sessions.details", ":sessionId") }}`.replace(':sessionId', sessionId),
+            url: "{{ route('sessions.details', ':sessionId') }}".replace(':sessionId', sessionId),
             type: 'GET',
             success: function(response) {
                 if (response.formation) {
@@ -763,7 +631,6 @@ $(document).ready(function () {
         });
     }
 
-
     window.addEtudiantAndPaiement = function() {
         const etudiantId = $('#etudiant-id').val();
         const sessionId = $('#new-student-session_id').val();
@@ -773,9 +640,7 @@ $(document).ready(function () {
         const prixReel = $('#prix-reel').val();
 
         if (!etudiantId || !sessionId) {
-            // alert('Etudiant ID or Session ID is missing.');
             alert('Etudiant ID or Session ID is missing.');
-
             return;
         }
 
@@ -785,7 +650,6 @@ $(document).ready(function () {
             data: {
                 etudiant_id: etudiantId,
                 date_paiement: datePaiement,
-                montant_a_paye: montantAPaye,
                 montant_paye: montantPaye,
                 mode_paiement: modePaiement,
                 prix_reel: prixReel
@@ -846,7 +710,8 @@ $(document).ready(function () {
         });
     };
 
-    
+
+
 
 window.addPaiement = function() {
     let etudiantId = $('#etudiant-id').val();
@@ -854,14 +719,6 @@ window.addPaiement = function() {
     let nouveauMontantPaye = $('#nouveau-montant-paye').val();
     let modePaiement = $('#mode-paiement').val();
     let datePaiement = $('#date-paiement').val();
-
-    // Log the data to check if date_paiement is included
-    console.log({
-        etudiant_id: etudiantId,
-        montant_paye: nouveauMontantPaye,
-        mode_paiement: modePaiement,
-        date_paiement: datePaiement
-    });
 
     $.ajax({
         url: `/sessions/${sessionId}/paiements`,
@@ -887,7 +744,62 @@ window.addPaiement = function() {
             alert('Erreur lors de l\'ajout du paiement: ' + xhr.responseText);
         }
     });
-}
+};
+
+
+
+window.addProfPaiement = function() {
+    let profId = $('#prof-id').val();
+    let sessionId = $('#prof-session-id').val();
+    let montantPaye = Math.round(parseFloat($('#prof-nouveau-montant-paye').val()));
+    let modePaiement = $('#prof-mode-paiement').val();
+    let datePaiement = $('#prof-date-paiement').val();
+
+    // Debug log to ensure the date field value is retrieved correctly
+    console.log({
+        profId: profId,
+        sessionId: sessionId,
+        montantPaye: montantPaye,
+        modePaiement: modePaiement,
+        datePaiement: datePaiement // Log the date value
+    });
+
+    // Ensure the date is formatted correctly as 'YYYY-MM-DD'
+    if (!datePaiement) {
+        alert('Veuillez sélectionner une date de paiement.');
+        return;
+    }
+
+    $.ajax({
+        url: `/sessions/${sessionId}/profpaiements`,
+        type: 'POST',
+        data: {
+            prof_id: profId,
+            montant_paye: montantPaye,
+            mode_paiement: modePaiement,
+            date_paiement: datePaiement
+        },
+        success: function(response) {
+            if (response.success) {
+                $('#profPaiementAddModal').modal('hide');
+                showProfContents(sessionId);
+            } else {
+                alert(response.error);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);
+            console.error('Status:', status);
+            console.error('Response:', xhr.responseText);
+            alert('Erreur lors de l\'ajout du paiement: ' + xhr.responseText);
+        }
+    });
+};
+
+
+
+
+
 
 
 
@@ -976,10 +888,10 @@ window.addPaiement = function() {
                         </tr>`;
                     });
                 } else {
-                    html += '<tr><td colspan="10" class="text-center">Aucun étudiant trouvé pour cette Formation.</td></tr>';
+                    html += '<tr><td colspan="8" class="text-center">Aucun étudiant trouvé pour cette Formation.</td></tr>';
                 }
 
-                html += '</tbody></table></div></div></div></div></div>';
+                html += `</tbody></table></div></div></div></div></div>`;
                 $('#formationContents').html(html);
                 $('#formationContentContainer').show();
                 $('html, body').animate({ scrollTop: $('#formationContentContainer').offset().top }, 'slow');
@@ -995,140 +907,181 @@ window.addPaiement = function() {
         $('html, body').animate({ scrollTop: 0 }, 'slow');
     };
 
+    window.setProfSessionId = function(sessionId) {
+        $('#new-prof-session_id').val(sessionId);
+    }
 
+    window.searchProfByPhone = function() {
+        const phone = $('#prof-phone-search').val();
+        const sessionId = $('#new-prof-session_id').val();
 
-
-
-
-
-
-
-
-
-
-
-
-window.setProfSessionId = function(sessionId) {
-    $('#new-prof-session_id').val(sessionId);
-}
-
-window.searchProfByPhone = function() {
-    const phone = $('#prof-phone-search').val();
-    const sessionId = $('#new-prof-session_id').val();
-
-    if (phone) {
-        $.ajax({
-            url: '{{ route("professeur.search") }}',
-            type: 'POST',
-            data: { phone: phone },
-            success: function(response) {
-                if (response.professeur) {
-                    const professeur = response.professeur;
-                    $.ajax({
-                        url: `/sessions/${sessionId}/check-prof`,
-                        type: 'POST',
-                        data: { prof_id: professeur.id },
-                        success: function(checkResponse) {
-                            if (checkResponse.isInSession) {
-                                $('#prof-search-results').html('<div class="alert alert-danger">Le professeur est déjà inscrit dans cette session.</div>');
-                            } else {
-                                $('#prof-search-results').html(
-                                    `<div class="alert alert-success">Professeur trouvé: ${professeur.nomprenom}</div>
-                                    <input type="hidden" id="prof-id" value="${professeur.id}">`
-                                );
-                                loadProfSessionDetails();
-                                $('#prof-payment-form').show();
+        if (phone) {
+            $.ajax({
+                url: '{{ route("professeur.search") }}',
+                type: 'POST',
+                data: { phone: phone },
+                success: function(response) {
+                    if (response.professeur) {
+                        const professeur = response.professeur;
+                        $.ajax({
+                            url: `/sessions/${sessionId}/check-prof`,
+                            type: 'POST',
+                            data: { prof_id: professeur.id },
+                            success: function(checkResponse) {
+                                if (checkResponse.isInSession) {
+                                    $('#prof-search-results').html('<div class="alert alert-danger">Le professeur est déjà inscrit dans cette session.</div>');
+                                } else {
+                                    $('#prof-search-results').html(
+                                        `<div class="alert alert-success">Professeur trouvé: ${professeur.nomprenom}</div>
+                                        <input type="hidden" id="prof-id" value="${professeur.id}">`
+                                    );
+                                    loadProfSessionDetails(sessionId);
+                                    $('#prof-payment-form').show();
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                alert('Erreur lors de la vérification du professeur dans la session: ' + error);
                             }
-                        },
-                        error: function(xhr, status, error) {
-                            alert('Erreur lors de la vérification du professeur dans la session: ' + error);
-                        }
-                    });
+                        });
+                    } else {
+                        $('#prof-search-results').html('<div class="alert alert-danger">Professeur non trouvé.</div>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Erreur lors de la recherche du professeur: ' + error);
+                }
+            });
+        } else {
+            alert('Veuillez entrer un numéro de téléphone.');
+        }
+    }
+
+    window.loadProfSessionDetails = function(sessionId) {
+        $.ajax({
+            url: `/sessions/${sessionId}/details`,
+            type: 'GET',
+            success: function(response) {
+                if (response.formation) {
+                    // $('#prof-montant').val(response.formation.prix); // Set Montant to Formation Price
+                    const today = new Date().toISOString().split('T')[0];
+                    $('#prof-date-paiement').val(today); // Set Date de Paiement to today's date
                 } else {
-                    $('#prof-search-results').html('<div class="alert alert-danger">Professeur non trouvé.</div>');
+                    $('#prof-montant').val(''); // Clear Montant if no formation data is found
                 }
             },
             error: function(xhr, status, error) {
-                alert('Erreur lors de la recherche du professeur: ' + error);
+                alert('Erreur lors du chargement des détails de la session: ' + error);
             }
         });
-    } else {
-        alert('Veuillez entrer un numéro de téléphone.');
     }
-}
 
-window.loadProfSessionDetails = function() {
-    const sessionId = $('#new-prof-session_id').val();
-    $.ajax({
-        url: `/sessions/${sessionId}/details`,
-        type: 'GET',
-        success: function(response) {
-            if (response.formation) {
-                $('#prof-montant').val(response.formation.prix); // Set Montant to Formation Price
-                const today = new Date().toISOString().split('T')[0];
-                $('#prof-date-paiement').val(today); // Set Date de Paiement to today's date
-            } else {
-                $('#prof-montant').val(''); // Clear Montant if no formation data is found
-            }
-        },
-        error: function(xhr, status, error) {
-            alert('Erreur lors du chargement des détails de la session: ' + error);
-        }
-    });
-}
+    window.updatePaymentFields = function() {
+        const typeId = $('#prof-typeymntprofs').val();
+        const montantField = $('#prof-montant');
+        const montantAPayeField = $('#prof-montant_a_paye');
+        const sessionId = $('#new-prof-session_id').val();
+        montantField.val(''); // Clear the montant field
 
+        if (typeId == '1') { // Assuming typeymntprofs_id 1 is for percentage
+            montantField.attr('placeholder', 'Entrez le pourcentage');
+            montantField.attr('max', '100');
+            montantField.attr('min', '0');
+            montantField.on('input', function() {
+                const value = parseInt(this.value, 10);
+                if (value < 0 || value > 100) {
+                    alert('Le pourcentage doit être compris entre 0 et 100');
+                    this.value = '';
+                } else {
+                    $.ajax({
+                        url: `/sessions/${sessionId}/total-student-payments`,
+                        type: 'GET',
+                        success: function(response) {
+                            const totalStudentPayments = response.total;
+                            const calculatedMontantAPaye = Math.round((totalStudentPayments * value) / 100);
+                            montantAPayeField.val(calculatedMontantAPaye);
+                        },
+                        error: function(xhr, status, error) {
+                            alert('Erreur lors de la récupération des paiements des étudiants: ' + error);
+                        }
+                    });
+                }
+            });
+        } else if (typeId == '2') { // Assuming typeymntprofs_id 2 is for monthly
+            montantField.attr('placeholder', 'Entrez le salaire mensuel');
+            montantField.removeAttr('max min');
+            montantField.off('input').on('input', function() {
+                const monthlySalary = parseInt(this.value, 10);
+                if (isNaN(monthlySalary) || monthlySalary <= 0) {
+                    montantAPayeField.val('');
+                    return;
+                }
 
+                getSessionDates(sessionId).done(function(response) {
+                    const startDate = new Date(response.start_date);
+                    const endDate = new Date(response.end_date);
+                    const diffTime = Math.abs(endDate - startDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const months = diffDays / 30;
+                    const calculatedMontantAPaye = Math.round(monthlySalary * months);
+                    montantAPayeField.val(calculatedMontantAPaye);
+                }).fail(function(jqXHR, textStatus) {
+                    alert('Erreur lors de la récupération des dates de session: ' + textStatus);
+                });
+            });
+        } else if (typeId == '3') { // Assuming typeymntprofs_id 3 is for hourly
+            montantField.attr('placeholder', 'Entrez le tarif horaire');
+            montantField.removeAttr('max min');
+            montantField.off('input').on('input', function() {
+                const hourlyRate = parseInt(this.value, 10);
+                if (isNaN(hourlyRate) || hourlyRate <= 0) {
+                    montantAPayeField.val('');
+                    return;
+                }
 
-window.updatePaymentFields = function() {
-    const typeId = $('#prof-typeymntprofs').val();
-    const montantField = $('#prof-montant');
-    const montantAPayeField = $('#prof-montant_a_paye');
-    montantField.val(''); // Clear the montant field
-
-    if (typeId == '1') { // Assuming typeymntprofs_id 1 is for percentage
-        montantField.attr('placeholder', 'Entrez le pourcentage');
-        montantField.attr('max', '100');
-        montantField.attr('min', '0');
-        montantField.on('input', function() {
-            const value = parseInt(this.value, 10);
-            if (value < 0 || value > 100) {
-                alert('Le pourcentage doit être compris entre 0 et 100');
-                this.value = '';
-            } else {
-                // Calculate montant_a_paye based on percentage
-                const totalStudentPayments = 10000; // This should be fetched dynamically
-                const calculatedMontantAPaye = (totalStudentPayments * value) / 100;
+                const totalHours = 1; // This should be fetched dynamically
+                const calculatedMontantAPaye = Math.round(hourlyRate * totalHours);
                 montantAPayeField.val(calculatedMontantAPaye);
-            }
-        });
-    } else if (typeId == '2') { // Assuming typeymntprofs_id 2 is for monthly
-        montantField.attr('placeholder', 'Entrez le salaire mensuel');
-        montantField.removeAttr('max min');
-        montantField.off('input').on('input', function() {
-            const monthlySalary = parseInt(this.value, 10);
-            const startDate = new Date($('#session-start-date').val());
-            const endDate = new Date($('#session-end-date').val());
-            const diffTime = Math.abs(endDate - startDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const months = diffDays / 30;
-            const calculatedMontantAPaye = monthlySalary * months;
-            montantAPayeField.val(calculatedMontantAPaye);
-        });
-    } else if (typeId == '3') { // Assuming typeymntprofs_id 3 is for hourly
-        montantField.attr('placeholder', 'Entrez le tarif horaire');
-        montantField.removeAttr('max min');
-        montantField.off('input').on('input', function() {
-            const hourlyRate = parseInt(this.value, 10);
-            const totalHours = 100; // This should be fetched dynamically
-            const calculatedMontantAPaye = hourlyRate * totalHours;
-            montantAPayeField.val(calculatedMontantAPaye);
-        });
+            });
+        }
     }
-}
 
+    // window.openAddProfPaymentModal = function(profId, sessionId) {
+    //     $.ajax({
+    //         url: `/sessions/${sessionId}/profs/${profId}/details`,
+    //         type: 'GET',
+    //         success: function(response) {
+    //             if (response.success) {
+    //                 const resteAPayer = response.reste_a_payer;
+    //                 if (resteAPayer <= 0) {
+    //                     iziToast.warning({
+    //                         message: 'Le professeur a déjà reçu la totalité du paiement.',
+    //                         position: 'topRight'
+    //                     });
+    //                 } else {
+    //                     $('#prof-id').val(profId);
+    //                     $('#prof-session-id').val(sessionId);
+    //                     $('#prof-montant').val(response.montant);
+    //                     $('#prof-montant_a_paye').val(response.montant_a_paye);
+    //                     $('#prof-reste-a-payer').val(resteAPayer);
+    //                     $('#profPaiementAddModal').modal('show');
+    //                 }
+    //             } else {
+    //                 iziToast.error({
+    //                     message: response.error,
+    //                     position: 'topRight'
+    //                 });
+    //             }
+    //         },
+    //         error: function(xhr, status, error) {
+    //             iziToast.error({
+    //                 message: 'Erreur lors de la récupération des détails: ' + error,
+    //                 position: 'topRight'
+    //             });
+    //         }
+    //     });
+    // }
 
-
-window.openAddProfPaymentModal = function(profId, sessionId) {
+    window.openAddProfPaymentModal = function(profId, sessionId) {
     $.ajax({
         url: `/sessions/${sessionId}/profs/${profId}/details`,
         type: 'GET',
@@ -1146,6 +1099,8 @@ window.openAddProfPaymentModal = function(profId, sessionId) {
                     $('#prof-montant').val(response.montant);
                     $('#prof-montant_a_paye').val(response.montant_a_paye);
                     $('#prof-reste-a-payer').val(resteAPayer);
+                    $('#prof-date-paiement').val(response.date_paiement); // Assurez-vous que cette valeur est définie
+
                     $('#profPaiementAddModal').modal('show');
                 }
             } else {
@@ -1164,228 +1119,169 @@ window.openAddProfPaymentModal = function(profId, sessionId) {
     });
 }
 
-window.addProfPaiement = function() {
-    let profId = $('#prof-id').val();
-    let sessionId = $('#prof-session-id').val();
-    let nouveauMontantPaye = $('#prof-nouveau-montant-paye').val();
-    let modePaiement = $('#prof-mode-paiement').val();
-    let datePaiement = $('#prof-date-paiement').val();
 
-    $.ajax({
-        url: `/sessions/${sessionId}/paiements`,
-        type: 'POST',
-        data: {
-            prof_id: profId,
-            montant_paye: nouveauMontantPaye,
-            mode_paiement: modePaiement,
-            date_paiement: datePaiement
-        },
-        success: function(response) {
-            if (response.success) {
-                $('#profPaiementAddModal').modal('hide');
-                showProfContents(sessionId);
-            } else {
-                alert(response.error);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Error:', error);
-            console.error('Status:', status);
-            console.error('Response:', xhr.responseText);
-            alert('Erreur lors de l\'ajout du paiement: ' + xhr.responseText);
-        }
-    });
-}
+    window.addProfAndPaiement = function() {
+        const profId = $('#prof-id').val();
+        const sessionId = $('#new-prof-session_id').val();
+        const datePaiement = $('#prof-date-paiement').val();
+        const montantAPaye = $('#prof-montant_a_paye').val();
+        const montantPaye = $('#prof-montant_paye').val();
+        const modePaiement = $('#prof-mode-paiement').val();
+        const montant = $('#prof-montant').val();
+        const typeId = $('#prof-typeymntprofs').val();
 
-window.addProfAndPaiement = function() {
-    const profId = $('#prof-id').val();
-    const sessionId = $('#new-prof-session_id').val();
-    const datePaiement = $('#prof-date-paiement').val();
-    const montantAPaye = $('#prof-montant_a_paye').val();
-    const montantPaye = $('#prof-montant_paye').val();
-    const modePaiement = $('#prof-mode-paiement').val();
-    const montant = $('#prof-montant').val();
-    const typeId = $('#prof-typeymntprofs').val();
-
-    if (!profId || !sessionId) {
-        alert('Professeur ID ou Session ID est manquant.');
-        return;
-    }
-
-    let calculatedMontantAPaye;
-    if (typeId == '1') { // Assuming typeymntprofs_id 1 is for percentage
-        const percentage = parseInt(montant, 10);
-        if (percentage < 0 || percentage > 100) {
-            alert('Le pourcentage doit être compris entre 0 et 100.');
+        if (!profId || !sessionId) {
+            alert('Professeur ID ou Session ID est manquant.');
             return;
         }
-        const totalStudentPayments = 10000; // This should be fetched dynamically
-        calculatedMontantAPaye = (totalStudentPayments * percentage) / 100;
-    } else if (typeId == '2') { // Assuming typeymntprofs_id 2 is for monthly
-        const monthlySalary = parseInt(montant, 10);
-        const startDate = new Date($('#session-start-date').val());
-        const endDate = new Date($('#session-end-date').val());
-        const diffTime = Math.abs(endDate - startDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        const months = diffDays / 30;
-        calculatedMontantAPaye = monthlySalary * months;
-    } else if (typeId == '3') { // Assuming typeymntprofs_id 3 is for hourly
-        const hourlyRate = parseInt(montant, 10);
-        const totalHours = 100; // This should be fetched dynamically
-        calculatedMontantAPaye = hourlyRate * totalHours;
+
+        submitProfAndPaiement(profId, sessionId, datePaiement, montantAPaye, montantPaye, modePaiement, montant, typeId);
     }
 
-    $('#prof-montant_a_paye').val(calculatedMontantAPaye);
-
-    $.ajax({
-        url: `/sessions/${sessionId}/profs/${profId}/add`,
-        type: 'POST',
-        data: {
-            prof_id: profId,
-            date_paiement: datePaiement,
-            montant_a_paye: montantAPaye,
-            montant_paye: montantPaye,
-            mode_paiement: modePaiement,
-            montant: montant,
-            montant_a_paye: calculatedMontantAPaye,
-            typeymntprofs_id: typeId,
-        },
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(response) {
-            if (response.success) {
-                $('#profAddModal').modal('hide');
-                showProfContents(sessionId); // Refresh the list after adding
-            } else {
-                alert(response.error);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Error:', error);
-            console.error('Status:', status);
-            console.error('Response:', xhr.responseText);
-            alert('Erreur lors de l\'ajout du professeur: ' + xhr.responseText);
-        }
-    });
-}
-
-window.deleteProfFromSession = function(profId, sessionId) {
-    if (confirm("Êtes-vous sûr de vouloir supprimer ce professeur de la session ?")) {
+    function submitProfAndPaiement(profId, sessionId, datePaiement, montantAPaye, montantPaye, modePaiement, montant, typeId) {
         $.ajax({
-            url: `/sessions/${sessionId}/profs/${profId}`,
-            type: 'DELETE',
+            url: `/sessions/${sessionId}/profs/${profId}/add`,
+            type: 'POST',
+            data: {
+                prof_id: profId,
+                date_paiement: datePaiement,
+                montant_a_paye: montantAPaye,
+                montant_paye: montantPaye,
+                mode_paiement: modePaiement,
+                montant: montant,
+                typeymntprofs_id: typeId,
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
             success: function(response) {
                 if (response.success) {
-                    iziToast.success({
-                        message: response.success,
-                        position: 'topRight'
-                    });
-                    showProfContents(sessionId); // Refresh the list after deleting
+                    $('#profAddModal').modal('hide');
+                    showProfContents(sessionId); // Refresh the list after adding
                 } else {
-                    iziToast.error({
-                        message: response.error,
-                        position: 'topRight'
-                    });
+                    alert(response.error);
                 }
             },
             error: function(xhr, status, error) {
-                iziToast.error({
-                    message: 'Erreur lors de la suppression: ' + error,
-                    position: 'topRight'
-                });
+                console.error('Error:', error);
+                console.error('Status:', status);
+                console.error('Response:', xhr.responseText);
+                alert('Erreur lors de l\'ajout du professeur: ' + xhr.responseText);
             }
         });
     }
-}
 
-window.showProfContents = function(sessionId) {
-    $.ajax({
-        url: `/sessions/${sessionId}/profcontents`,
-        type: 'GET',
-        success: function(response) {
-            if (response.error) {
-                alert(response.error);
-                return;
-            }
-
-            let html = `<div class="container-fluid py-4">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card my-4">
-                            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 d-flex justify-content-between align-items-center">
-                                <div>
-                                    <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#profAddModal" onclick="setProfSessionId(${sessionId})" data-toggle="tooltip" title="Ajouter un professeur"><i class="material-icons opacity-10">add</i></button>
-                                    <button class="btn btn-secondary" onclick="hideProfContents()">Fermer</button>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 pb-2">
-                                <div class="table-responsive p-0" id="sessions-table">
-                                    <table class="table align-items-center mb=0">
-                                        <thead>
-                                            <tr>
-                                                <th>Nom & Prénom</th>
-                                                <th>Phone</th>
-                                                <th>WhatsApp</th>
-                                                <th>Montant</th>
-                                                <th>Montant à Payé</th>
-                                                <th>Montant Payé</th>
-                                                <th>Reste à Payer</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>`;
-
-            if (response.professeurs && response.professeurs.length > 0) {
-                response.professeurs.forEach(function(content) {
-                    let resteAPayer = content.montant_a_paye - content.montant_paye;
-
-                    html += `<tr>
-                        <td>${content.nomprenom}</td>
-                        <td>${content.phone}</td>
-                        <td>${content.wtsp}</td>
-                        <td>${content.montant}</td>
-                        <td>${content.montant_a_paye}</td>
-                        <td>${content.montant_paye}</td>
-                        <td>${resteAPayer}</td>
-                        <td>
-                            <button class="btn btn-dark" onclick="openAddProfPaymentModal(${content.id}, ${sessionId})"><i class="material-icons opacity-10">payment</i></button>
-                            <button class="btn btn-danger" onclick="deleteProfFromSession(${content.id}, ${sessionId})"><i class="material-icons opacity-10">delete_forever</i></button>
-                        </td>
-                    </tr>`;
-                });
-            } else {
-                html += '<tr><td colspan="7" class="text-center">Aucun professeur trouvé pour cette session.</td></tr>';
-            }
-
-            html += '</tbody></table></div></div></div></div></div>';
-            $('#formationProfContents').html(html);
-            $('#formationProfContentContainer').show();
-            $('html, body').animate({ scrollTop: $('#formationProfContentContainer').offset().top }, 'slow');
-        },
-        error: function() {
-            alert('Erreur lors du chargement des contenus.');
+    window.deleteProfFromSession = function(profId, sessionId) {
+        if (confirm("Êtes-vous sûr de vouloir supprimer ce professeur de la session ?")) {
+            $.ajax({
+                url: `/sessions/${sessionId}/profs/${profId}`,
+                type: 'DELETE',
+                success: function(response) {
+                    if (response.success) {
+                        iziToast.success({
+                            message: response.success,
+                            position: 'topRight'
+                        });
+                        showProfContents(sessionId); // Refresh the list after deleting
+                    } else {
+                        iziToast.error({
+                            message: response.error,
+                            position: 'topRight'
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    iziToast.error({
+                        message: 'Erreur lors de la suppression: ' + error,
+                        position: 'topRight'
+                    });
+                }
+            });
         }
-    });
-}
+    }
 
+    window.showProfContents = function(sessionId) {
+        $.ajax({
+            url: `/sessions/${sessionId}/profcontents`,
+            type: 'GET',
+            success: function(response) {
+                if (response.error) {
+                    iziToast.error({ message: response.error, position: 'topRight' });
+                    return;
+                }
 
+                let html = `<div class="container-fluid py-4">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card my-4">
+                                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#profAddModal" onclick="setProfSessionId(${sessionId})" data-toggle="tooltip" title="Ajouter un professeur"><i class="material-icons opacity-10">add</i></button>
+                                        <button class="btn btn-secondary" onclick="hideProfContents()">Fermer</button>
+                                    </div>
+                                </div>
+                                <div class="card-body px-0 pb-2">
+                                    <div class="table-responsive p-0" id="sessions-table">
+                                        <table class="table align-items-center mb=0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nom & Prénom</th>
+                                                    <th>Phone</th>
+                                                    <th>WhatsApp</th>
+                                                    <th>Montant</th>
+                                                    <th>Montant à Payer</th>
+                                                    <th>Montant Payé</th>
+                                                    <th>Reste à Payer</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>`;
 
-window.hideProfContents = function() {
-    $('#formationProfContentContainer').hide();
-    $('html, body').animate({ scrollTop: 0 }, 'slow');
-}
+                if (response.professeurs && response.professeurs.length > 0) {
+                    response.professeurs.forEach(function(content) {
+                        let montant = content.montant || 0;
+                        let montant_a_paye = content.montant_a_paye || 0;
+                        let montant_paye = content.montant_paye || 0;
+                        let resteAPayer = montant_a_paye - montant_paye;
 
+                        html += `<tr>
+                            <td>${content.nomprenom || 'N/A'}</td>
+                            <td>${content.phone || 'N/A'}</td>
+                            <td>${content.wtsp || 'N/A'}</td>
+                            <td>${montant}</td>
+                            <td>${montant_a_paye}</td>
+                            <td>${montant_paye}</td>
+                            <td>${resteAPayer}</td>
+                            <td>
+                                <button class="btn btn-dark" onclick="openAddProfPaymentModal(${content.id}, ${sessionId})"><i class="material-icons opacity-10">payment</i></button>
+                                <button class="btn btn-danger" onclick="deleteProfFromSession(${content.id}, ${sessionId})"><i class="material-icons opacity-10">delete_forever</i></button>
+                            </td>
+                        </tr>`;
+                    });
+                } else {
+                    html += '<tr><td colspan="8" class="text-center">Aucun professeur trouvé pour cette session.</td></tr>';
+                }
 
+                html += `</tbody></table></div></div></div></div></div>`;
+                $('#formationProfContents').html(html);
+                $('#formationProfContentContainer').show();
+                $('html, body').animate({ scrollTop: $('#formationProfContentContainer').offset().top }, 'slow');
+            },
+            error: function(xhr, status, error) {
+                iziToast.error({ message: 'Erreur lors du chargement des contenus: ' + error, position: 'topRight' });
+            }
+        });
+    }
 
-
-
-
-
+    window.hideProfContents = function() {
+        $('#formationProfContentContainer').hide();
+        $('html, body').animate({ scrollTop: 0 }, 'slow');
+    }
 });
+
+
+
+
 </script>
-
-
-
 </body>
 </html>
