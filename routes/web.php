@@ -81,8 +81,11 @@ Route::post('/formations/store', [FormationsController::class, 'store']);
 Route::put('/formations/{id}/update', [FormationsController::class, 'update']);
 Route::delete('/formations/{id}/delete', [FormationsController::class, 'delete_formation']);
 
+Route::delete('contenus/{id}', [ContenusFormationController::class, 'delete_contenue'])->name('contenus.delete');
 
+Route::resource('contenus', ContenusFormationController::class);
 
+Route::get('formations/{formation}/contents', [FormationsController::class, 'getContents']);
 
 // Etudiant routes
 Route::post('/etudiants/{etudiantId}/sessions/{sessionId}/add', [EtudiantController::class, 'addStudentToSession']);

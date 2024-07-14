@@ -1088,7 +1088,7 @@ window.addProfPaiement = function() {
         success: function(response) {
             if (response.success) {
                 const resteAPayer = response.reste_a_payer;
-                if (resteAPayer <= 0) {
+                if (resteAPayer >= 0) {
                     iziToast.warning({
                         message: 'Le professeur a déjà reçu la totalité du paiement.',
                         position: 'topRight'

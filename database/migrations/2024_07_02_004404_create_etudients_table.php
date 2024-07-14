@@ -7,11 +7,12 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up()
-    {
+    {     
+        if (!Schema::hasTable('etudiants')) {
         Schema::create('etudiants', function (Blueprint $table) {
             $table->id();
             $table->string('image')->nullable();
-            $table->integer('nni')->unique();
+            $table->String('nni')->unique();
             $table->string('nomprenom');
             $table->string('diplome')->nullable();
             $table->string('genre');
@@ -25,7 +26,7 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-
+    }
     public function down()
     {
         Schema::dropIfExists('etudiants');

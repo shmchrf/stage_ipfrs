@@ -13,17 +13,17 @@
                                     </tr>
                                 </thead> 
                                 <tbody>
-                                    @foreach($contenues as $contenue)
+                                    @foreach($contenues as $$content)
                                     <tr>
-                                        <td>{{ $contenue->id }}</td>
-                                        <td><a href="javascript:void(0)" id="show-formation" data-id="{{ $contenue->id }}" >{{ $contenue->formation->nom ?? 'N/A' }}</a></td>
-                                        <td>{{ $contenue->nomchap}}</td>
-                                        <td>{{ $contenue->nomunite}}</td>
-                                        <td>{{ $contenue->nombreheures }}</td>
-                                        <td>{{ $contenue->description }}</td>
+                                        <td>{{ $$content->id }}</td>
+                                        <td><a href="javascript:void(0)" id="show-formation" data-id="{{ $$content->id }}" >{{ $$content->formation->nom ?? 'N/A' }}</a></td>
+                                        <td>{{ $$content->nomchap}}</td>
+                                        <td>{{ $$content->nomunite}}</td>
+                                        <td>{{ $$content->nombreheures }}</td>
+                                        <td>{{ $$content->description }}</td>
                                         <td class="text-center">
-                                            <a href="javascript:void(0)" id="edit-contenue" data-id="{{ $contenue->id }}" class="btn btn-info"><i class="material-icons opacity-10">border_color</i></a>
-                                            <a href="javascript:void(0)" id="delete-contenue" data-id="{{ $contenue->id }}" class="btn btn-danger"><i class="material-icons opacity-10">delete</i></a>
+                                            <a href="javascript:void(0)" id="edit-contenue" data-id="{{ $$content->id }}" class="btn btn-info"><i class="material-icons opacity-10">border_color</i></a>
+                                            <a href="javascript:void(0)" id="delete-contenue" data-id="{{ $$content->id }}" class="btn btn-danger"><i class="material-icons opacity-10">delete</i></a>
                                         </td>
                                     </tr>
                                     @endforeach

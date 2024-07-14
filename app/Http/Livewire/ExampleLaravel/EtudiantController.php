@@ -67,11 +67,11 @@ class EtudiantController extends Component
 
 
 
-public function store(Request $request)
+    public function store(Request $request)
 {
     $request->validate([
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        'nni' => 'required|digits:10|integer|gt:0|unique:etudiants,nni',
+        'nni' => 'required|digits:10|unique:etudiants,nni',
         'nomprenom' => 'required|string',
         'diplome' => 'nullable|string',
         'genre' => 'required|string',
@@ -79,7 +79,7 @@ public function store(Request $request)
         'adress' => 'nullable|string',
         'datenaissance' => 'nullable|date',
         'email' => 'nullable|email|unique:etudiants,email',
-        'phone' => 'required|digits:8|integer|gt:0',
+        'phone' => 'required|digits:8|integer',
         'wtsp' => 'nullable|integer',
         'country_id' => 'required|exists:countries,id',
     ]);
@@ -113,45 +113,43 @@ public function store(Request $request)
 }
 
 
-
-    
     
 
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'nni' => 'required|digits:10|integer|gt:0',
-            'nomprenom' => 'required|string',
-            'diplome' => 'nullable|string',
-            'genre' => 'required|string',
-            'lieunaissance' => 'nullable|string',
-            'adress' => 'nullable|string',
-            'datenaissance' => 'nullable|date',
-            'email' => 'nullable|email',
-            'phone' => 'required|digits:8|integer|gt:0',
-            'wtsp' => 'nullable|integer',
-            'country_id' => 'required|exists:countries,id',
-        ]);
+public function update(Request $request, $id)
+{
+    $validated = $request->validate([
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'nni' => 'required|digits:10',
+        'nomprenom' => 'required|string',
+        'diplome' => 'nullable|string',
+        'genre' => 'required|string',
+        'lieunaissance' => 'nullable|string',
+        'adress' => 'nullable|string',
+        'datenaissance' => 'nullable|date',
+        'email' => 'nullable|email',
+        'phone' => 'required|digits:8|integer',
+        'wtsp' => 'nullable|integer',
+        'country_id' => 'required|exists:countries,id',
+    ]);
 
-        try {
-            $etudiant = Etudiant::findOrFail($id);
+    try {
+        $etudiant = Etudiant::findOrFail($id);
 
-            if ($request->hasFile('image')) {
-                $imageName = time() . '.' . $request->image->getClientOriginalExtension();
-                $request->image->move(public_path('images'), $imageName);
-                $validated['image'] = $imageName;
-            }
-
-            $etudiant->update($validated);
-
-            return response()->json(['success' => 'Étudiant modifié avec succès', 'etudiant' => $etudiant->load('country')]);
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->image->getClientOriginalExtension();
+            $request->image->move(public_path('images'), $imageName);
+            $validated['image'] = $imageName;
         }
+
+        $etudiant->update($validated);
+
+        return response()->json(['success' => 'Étudiant modifié avec succès', 'etudiant' => $etudiant->load('country')]);
+    } catch (\Throwable $th) {
+        return response()->json(['error' => $th->getMessage()], 500);
     }
+}
 
-
+    
     public function deleteEtudiant($id)
     {
         $etudiant = Etudiant::find($id);

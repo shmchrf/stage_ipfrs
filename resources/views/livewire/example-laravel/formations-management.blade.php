@@ -120,34 +120,6 @@
 
 
 
-
-    <!-- Modal Détails Formation -->
-<!-- <div class="modal fade" id="formationDetailModal" tabindex="-1" aria-labelledby="formationDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="width: 15cm;">
-            <div class="modal-header">
-                <h5 class="modal-title" id="formationDetailModalLabel">Détails de la Formation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="formation-details">
-                    <p><strong>Code:</strong> <span id="formation-code-details"></span></p>
-                    <p><strong>Nom:</strong> <span id="formation-nom-details"></span></p>
-                    <p><strong>Durée:</strong> <span id="formation-duree-details"></span> Heures</p>
-                    <p><strong>Prix:</strong> <span id="formation-prix-details"></span> MRU</p>
-                    
-                    <h4>Contenus de la Formation</h4>
-                    <ul id="formation-contents-details"></ul>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div> -->
-
-
     <!-- Modal Modifier Formation -->
     <div class="modal fade" id="formationEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -237,6 +209,7 @@
     </div>
 
     <!-- Modal Modifier Contenu -->
+    <!-- Modal Modifier Contenu -->
     <div class="modal fade" id="contenuEditModal" tabindex="-1" aria-labelledby="contenuEditModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -264,9 +237,20 @@
                             <label for="nombreheures-edit" class="form-label">Nombre Heures</label>
                             <input type="number" class="form-control" id="nombreheures-edit" name="nombreheures" required>
                         </div>
-                        <button type="button" class="btn btn-primary" id="update-contenu">Modifier</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <div class="mb-3">
+                            <label for="formation_id-edit" class="form-label">Formation</label>
+                            <select class="form-control" id="formation_id-edit" name="formation_id" required>
+                                <option value="">Sélectionner Formation</option>
+                                @foreach ($formations as $formation)
+                                    <option value="{{ $formation->id }}">{{ $formation->nom }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="update-contenu">Modifier</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>
@@ -485,53 +469,53 @@
         });
 
         // Modifier un contenu
-        window.editContent = function(contentId) {
-            $.get('/contenus/' + contentId, function (data) {
-                $('#contenu-id').val(data.contenu.id);
-                $('#nomchap-edit').val(data.contenu.nomchap);
-                $('#nomunite-edit').val(data.contenu.nomunite);
-                $('#description-edit').val(data.contenu.description);
-                $('#nombreheures-edit').val(data.contenu.nombreheures);
-                $('#formation_id-edit').val(data.contenu.formation_id);
-                $('#contenuEditModal').modal('show');
-            });
-        }
+        // window.editContent = function(contentId) {
+        //     $.get('/contenus/' + contentId, function (data) {
+        //         $('#contenu-id').val(data.contenu.id);
+        //         $('#nomchap-edit').val(data.contenu.nomchap);
+        //         $('#nomunite-edit').val(data.contenu.nomunite);
+        //         $('#description-edit').val(data.contenu.description);
+        //         $('#nombreheures-edit').val(data.contenu.nombreheures);
+        //         $('#formation_id-edit').val(data.contenu.formation_id);
+        //         $('#contenuEditModal').modal('show');
+        //     });
+        // }
 
-        $('#update-contenu').click(function (e) {
-            e.preventDefault();
-            let id = $('#contenu-id').val();
-            let form = $('#contenu-edit-form')[0];
-            let data = new FormData(form);
-            data.append('_method', 'PUT');
+        // $('#update-contenu').click(function (e) {
+        //     e.preventDefault();
+        //     let id = $('#contenu-id').val();
+        //     let form = $('#contenu-edit-form')[0];
+        //     let data = new FormData(form);
+        //     data.append('_method', 'PUT');
 
-            $.ajax({
-                url: '/contenus/' + id,
-                type: 'POST',
-                data: data,
-                dataType: 'json',
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    if (response.error) {
-                        iziToast.error({
-                            title: 'Erreur',
-                            message: response.error,
-                            position: 'topRight'
-                        });
-                    } else {
-                        iziToast.success({
-                            title: 'Succès',
-                            message: response.success,
-                            position: 'topRight'
-                        });
-                        $('#contenuEditModal').modal('hide');
-                        setTimeout(function () {
-                            location.reload();
-                        }, 1000);
-                    }
-                }
-            });
-        });
+        //     $.ajax({
+        //         url: '/contenus/' + id,
+        //         type: 'POST',
+        //         data: data,
+        //         dataType: 'json',
+        //         processData: false,
+        //         contentType: false,
+        //         success: function (response) {
+        //             if (response.error) {
+        //                 iziToast.error({
+        //                     title: 'Erreur',
+        //                     message: response.error,
+        //                     position: 'topRight'
+        //                 });
+        //             } else {
+        //                 iziToast.success({
+        //                     title: 'Succès',
+        //                     message: response.success,
+        //                     position: 'topRight'
+        //                 });
+        //                 $('#contenuEditModal').modal('hide');
+        //                 setTimeout(function () {
+        //                     location.reload();
+        //                 }, 1000);
+        //             }
+        //         }
+        //     });
+        // });
 
         // Supprimer un contenu
         window.deleteContent = function(contentId) {
@@ -639,80 +623,179 @@
 
         // Afficher les contenus de la formation
         // Afficher les contenus de la formation
-window.showContents = function(formationId) {
-    $.ajax({
-        url: '/formations/' + formationId + '/contents', // Utilisation de guillemets simples pour l'URL
-        type: 'GET',
-        success: function(response) {
-            if (response.error) {
-                alert(response.error);
-                return;
+        $(document).ready(function () {
+    // Autres configurations et fonctions...
+
+    // Modifier un contenu
+    // Modifier un contenu
+    $(document).ready(function () {
+    // Modifier un contenu
+    window.editContent = function(contentId) {
+        $.get('/contenus/' + contentId, function (data) {
+            $('#contenu-id').val(data.contenu.id);
+            $('#nomchap-edit').val(data.contenu.nomchap);
+            $('#nomunite-edit').val(data.contenu.nomunite);
+            $('#description-edit').val(data.contenu.description);
+            $('#nombreheures-edit').val(data.contenu.nombreheures);
+            $('#formation_id-edit').val(data.contenu.formation_id);
+            $('#contenuEditModal').modal('show');
+        });
+    };
+
+    $('#update-contenu').click(function (e) {
+        e.preventDefault();
+        let id = $('#contenu-id').val();
+        let form = $('#contenu-edit-form')[0];
+        let data = new FormData(form);
+        data.append('_method', 'PUT');
+
+        $.ajax({
+            url: '/contenus/' + id,
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.error) {
+                    iziToast.error({
+                        title: 'Erreur',
+                        message: response.error,
+                        position: 'topRight'
+                    });
+                } else {
+                    iziToast.success({
+                        title: 'Succès',
+                        message: response.success,
+                        position: 'topRight'
+                    });
+                    $('#contenuEditModal').modal('hide');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                }
             }
-
-            let html = `
-            <div class="container-fluid py-4">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card my-4">
-                            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 d-flex justify-content-between align-items-center">
-                                <div>
-                                    <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#contenuAddModal" onclick="setFormationId(${formationId})" data-toggle="tooltip" title="ajouter un contenu"><i class="material-icons opacity-10">add</i></button>
-                                    <button class="btn btn-secondary" onclick="hideContents()">Fermer</button>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 pb-2">
-                                <div class="table-responsive p-0" id="sessions-table">
-                                    <table class="table align-items-center mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Chapitre</th>
-                                                <th>Unité</th>
-                                                <th>Description</th>
-                                                <th>Nombre Heures</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>`;
-
-            if (response.contenus.length > 0) {
-                response.contenus.forEach(function(content) {
-                    html += `<tr>
-                        <td>${content.id}</td>
-                        <td>${content.nomchap}</td>
-                        <td>${content.nomunite}</td>
-                        <td>${content.description}</td>
-                        <td>${content.nombreheures}</td>
-                        <td>
-                            <button class="btn btn-danger" onclick="deleteContent(${content.id})"><i class="material-icons opacity-10">delete</i></button>
-                              <button class="btn btn-info" onclick="editContent(${content.id})">
-                            <i class="material-icons opacity-10">edit</i>
-                        </button>
-                        </td>
-                    </tr>`;
-                });
-            } else {
-                html += '<tr><td colspan="6" class="text-center">Aucun Contenus trouvé pour cet Programme.</td></tr>';
-            }
-
-            html += `</tbody>
-                    </table>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>`;
-
-            $('#formationContents').html(html);
-            $('#formationContentContainer').show();
-            $('html, body').animate({ scrollTop: $('#formationContentContainer').offset().top }, 'slow');
-        },
-        error: function() {
-            alert('Erreur lors du chargement des contenus.');
-        }
+        });
     });
-};
+});
+
+    // Supprimer un contenu
+    window.deleteContent = function(contentId) {
+        if (confirm("Voulez-vous vraiment supprimer ce contenu?")) {
+            $.ajax({
+                url: '/contenus/' + contentId,
+                type: 'DELETE',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        iziToast.success({
+                            title: 'Succès',
+                            message: response.success,
+                            position: 'topRight'
+                        });
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        iziToast.error({
+                            title: 'Erreur',
+                            message: response.error,
+                            position: 'topRight'
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    iziToast.error({
+                        title: 'Erreur',
+                        message: 'Une erreur s\'est produite: ' + error,
+                        position: 'topRight'
+                    });
+                }
+            });
+        }
+    }
+
+    // Afficher les contenus de la formation
+    window.showContents = function(formationId) {
+        $.ajax({
+            url: '/formations/' + formationId + '/contents',
+            type: 'GET',
+            success: function(response) {
+                if (response.error) {
+                    alert(response.error);
+                    return;
+                }
+
+                let html = `
+                <div class="container-fluid py-4">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card my-4">
+                                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#contenuAddModal" onclick="setFormationId(${formationId})" data-toggle="tooltip" title="ajouter un contenu"><i class="material-icons opacity-10">add</i></button>
+                                        <button class="btn btn-secondary" onclick="hideContents()">Fermer</button>
+                                    </div>
+                                </div>
+                                <div class="card-body px-0 pb-2">
+                                    <div class="table-responsive p-0" id="sessions-table">
+                                        <table class="table align-items-center mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Chapitre</th>
+                                                    <th>Unité</th>
+                                                    <th>Description</th>
+                                                    <th>Nombre Heures</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>`;
+
+                if (response.contenus.length > 0) {
+                    response.contenus.forEach(function(content) {
+                        html += `<tr>
+                            <td>${content.id}</td>
+                            <td>${content.nomchap}</td>
+                            <td>${content.nomunite}</td>
+                            <td>${content.description}</td>
+                            <td>${content.nombreheures}</td>
+                             <td>
+                                 <a href="javascript:void(0)" class="btn btn-info" onclick="editContent(${content.id})"><i class="material-icons opacity-10">border_color</i></a>
+                                <a href="javascript:void(0)" class="btn btn-danger" onclick="deleteContent(${content.id})"><i class="material-icons opacity-10">delete</i></a>
+                             </td>
+                            <td>
+
+
+                        </tr>`;
+                    });
+                } else {
+                    html += '<tr><td colspan="6" class="text-center">Aucun Contenus trouvé pour cet Programme.</td></tr>';
+                }
+
+                html += `</tbody>
+                        </table>
+                        </div>
+                        </div>
+                        </div>
+                        </div>
+                        </div>
+                        </div>`;
+
+                $('#formationContents').html(html);
+                $('#formationContentContainer').show();
+                $('html, body').animate({ scrollTop: $('#formationContentContainer').offset().top }, 'slow');
+            },
+            error: function() {
+                alert('Erreur lors du chargement des contenus.');
+            }
+        });
+    }
+
+    window.setFormationId = function(formationId) {
+        $('#formation-id-contenu').val(formationId);
+    };
+});
 
 
 
