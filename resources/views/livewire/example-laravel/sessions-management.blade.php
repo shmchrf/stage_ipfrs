@@ -833,88 +833,78 @@ window.addProfPaiement = function() {
     };
 
     window.showContents = function(sessionId) {
-        $.ajax({
-            url: `/sessions/${sessionId}/contents`,
-            type: 'GET',
-            success: function(response) {
-                if (response.error) {
-                    alert(response.error);
-                    return;
-                }
-
-                let html = `<div class="container-fluid py-4">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card my-4">
-                                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#etudiantAddModal" onclick="setSessionId(${sessionId})" data-toggle="tooltip" title="Ajouter un étudiant"><i class="material-icons opacity-10">add</i></button>
-                                        <button class="btn btn-secondary" onclick="hideStudentContents()">Fermer</button>
-                                    </div>
-                                </div>
-                                <div class="card-body px-0 pb-2">
-                                    <div class="table-responsive p-0" id="sessions-table">
-                                        <table class="table align-items-center mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Nom & Prénom</th>
-                                                    <th>Phone</th>
-                                                    <th>WhatsApp</th>
-                                                    <th>Prix Programme</th>
-                                                    <th>Prix Réel</th>
-                                                    <th>Montant Payé</th>
-                                                    <th>Reste à Payer</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>`;
-
-                if (response.etudiants.length > 0) {
-                    response.etudiants.forEach(function(content) {
-                        let resteAPayer = content.prix_reel - content.montant_paye;
-
-                        html += `<tr>
-                            <td>${content.nomprenom}</td>
-                            <td>${content.phone}</td>
-                            <td>${content.wtsp}</td>
-                            <td>${content.prix_formation}</td>
-                            <td>${content.prix_reel}</td>
-                            <td>${content.montant_paye}</td>
-                            <td>${resteAPayer}</td>
-                            <td>
-                                <button class="btn btn-dark" onclick="openAddPaymentModal(${content.id}, ${sessionId})"><i class="material-icons opacity-10">payment</i></button>
-                                <button class="btn btn-danger" onclick="deleteStudentFromSession(${content.id}, ${sessionId})"><i class="material-icons opacity-10">delete_forever</i></button>
-                                 @foreach($sessions as $session)
-    @foreach($session->etudiants as $etudiant)
-    
-            {{ $etudiant->nom }}</td>
-            
-                <a href="{{ route('sessions.generateReceipt', ['etudiantId' => $etudiant->id, 'sessionId' => $session->id]) }}" class="btn btn-info">
-                    <i class="material-icons opacity-10">download</i>
-                </a>
-        
-        
-    @endforeach
-@endforeach
-
-</td>
-                            </td>
-                        </tr>`;
-                    });
-                } else {
-                    html += '<tr><td colspan="8" class="text-center">Aucun étudiant trouvé pour cette Formation.</td></tr>';
-                }
-
-                html += `</tbody></table></div></div></div></div></div>`;
-                $('#formationContents').html(html);
-                $('#formationContentContainer').show();
-                $('html, body').animate({ scrollTop: $('#formationContentContainer').offset().top }, 'slow');
-            },
-            error: function() {
-                alert('Erreur lors du chargement des contenus.');
+    $.ajax({
+        url: `/sessions/${sessionId}/contents`,
+        type: 'GET',
+        success: function(response) {
+            if (response.error) {
+                alert(response.error);
+                return;
             }
-        });
-    };
+
+            let html = `<div class="container-fluid py-4">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card my-4">
+                            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#etudiantAddModal" onclick="setSessionId(${sessionId})" data-toggle="tooltip" title="Ajouter un étudiant"><i class="material-icons opacity-10">add</i></button>
+                                    <button class="btn btn-secondary" onclick="hideStudentContents()">Fermer</button>
+                                </div>
+                            </div>
+                            <div class="card-body px-0 pb-2">
+                                <div class="table-responsive p-0" id="sessions-table">
+                                    <table class="table align-items-center mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Nom & Prénom</th>
+                                                <th>Phone</th>
+                                                <th>WhatsApp</th>
+                                                <th>Prix Programme</th>
+                                                <th>Prix Réel</th>
+                                                <th>Montant Payé</th>
+                                                <th>Reste à Payer</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`;
+
+            if (response.etudiants.length > 0) {
+                response.etudiants.forEach(function(content) {
+                    let resteAPayer = content.prix_reel - content.montant_paye;
+
+                    html += `<tr>
+                        <td>${content.nomprenom}</td>
+                        <td>${content.phone}</td>
+                        <td>${content.wtsp}</td>
+                        <td>${content.prix_formation}</td>
+                        <td>${content.prix_reel}</td>
+                        <td>${content.montant_paye}</td>
+                        <td>${resteAPayer}</td>
+                        <td>
+                            <button class="btn btn-dark" onclick="openAddPaymentModal(${content.id}, ${sessionId})"><i class="material-icons opacity-10">payment</i></button>
+                            <button class="btn btn-danger" onclick="deleteStudentFromSession(${content.id}, ${sessionId})"><i class="material-icons opacity-10">delete_forever</i></button>
+                            <a href="/sessions/${sessionId}/generateReceipt/${content.id}" class="btn btn-info">
+                                <i class="material-icons opacity-10">download</i>
+                            </a>
+                        </td>
+                    </tr>`;
+                });
+            } else {
+                html += '<tr><td colspan="8" class="text-center">Aucun étudiant trouvé pour cette session.</td></tr>';
+            }
+
+            html += `</tbody></table></div></div></div></div></div>`;
+            $('#formationContents').html(html);
+            $('#formationContentContainer').show();
+            $('html, body').animate({ scrollTop: $('#formationContentContainer').offset().top }, 'slow');
+        },
+        error: function(xhr, status, error) {
+            alert('Erreur lors du chargement des contenus: ' + error);
+        }
+    });
+}
+
 
     window.hideStudentContents = function() {
         $('#formationContentContainer').hide();
@@ -1269,6 +1259,9 @@ window.addProfPaiement = function() {
                             <td>
                                 <button class="btn btn-dark" onclick="openAddProfPaymentModal(${content.id}, ${sessionId})"><i class="material-icons opacity-10">payment</i></button>
                                 <button class="btn btn-danger" onclick="deleteProfFromSession(${content.id}, ${sessionId})"><i class="material-icons opacity-10">delete_forever</i></button>
+                                 <a href="/sessions/${sessionId}/generateProfReceipt/${content.id}" class="btn btn-info">
+                                <i class="material-icons opacity-10">download</i>
+                            </a>
                             </td>
                         </tr>`;
                     });

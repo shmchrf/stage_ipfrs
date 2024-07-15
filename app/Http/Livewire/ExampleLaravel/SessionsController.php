@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SessionsExport;
 use App\Models\Typeymntprofs;
+use Illuminate\Support\Facades\Auth; // Add this line
 
 class SessionsController extends Component
 {
@@ -375,40 +376,92 @@ class SessionsController extends Component
             return response()->json(['error' => 'Erreur lors de la suppression de l\'étudiant: ' . $e->getMessage()], 500);
         }
     }
-    
-    public function generateReceipt($etudiantId, $sessionId)
-    {
-        try {
-            $etudiant = Etudiant::findOrFail($etudiantId);
-            $session = Sessions::findOrFail($sessionId);
-            $paiement = Paiement::where('etudiant_id', $etudiantId)
-                                ->where('session_id', $sessionId)
-                                ->firstOrFail();
-    
-            // Convertir les dates en objets DateTime si elles ne le sont pas déjà
-            $dateDebut = $session->date_debut instanceof \DateTime ? $session->date_debut : new \DateTime($session->date_debut);
-            $dateFin = $session->date_fin instanceof \DateTime ? $session->date_fin : new \DateTime($session->date_fin);
-    
-            $data = [
-                'date' => now()->format('d/m/Y'),
-                'nom_prenom' => $etudiant->nomprenom,
-                'montant_paye' => $paiement->montant_paye,
-                'formation' => $session->formation->nom,
-                'date_debut' => $dateDebut->format('d/m/Y'),
-                'date_fin' => $dateFin->format('d/m/Y'),
-                'par' => 'Votre Organisation',
-                'signature' => 'Signature Autorisée',
-            ];
-    
-            $pdf = PDF::loadView('livewire.example-laravel.receipt', $data);
-    
-            return $pdf->download('reçu.pdf');
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Étudiant ou Session non trouvé'], 404);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Erreur lors de la génération du reçu: ' . $e->getMessage()], 500);
-        }
+    public function generateReceipt($sessionId, $etudiantId)
+{
+    try {
+        $etudiant = Etudiant::findOrFail($etudiantId);
+        $session = Sessions::findOrFail($sessionId);
+        $paiement = Paiement::where('etudiant_id', $etudiantId)
+                            ->where('session_id', $sessionId)
+                            ->firstOrFail();
+
+        $montantPaye = $paiement->montant_paye;
+        $prixReel = $paiement->prix_reel;
+        $resteAPayer = $prixReel - $montantPaye;
+        $modePaiement = $paiement->mode->nom; // Access the mode name via the relationship
+
+        // Convert dates to DateTime objects
+        $dateDebut = new \DateTime($session->date_debut);
+        $dateFin = new \DateTime($session->date_fin);
+
+        $data = [
+            'date' => now()->format('d/m/Y'),
+            'nom_prenom' => $etudiant->nomprenom,
+            'Telephone' => $etudiant->phone,
+            'prix_reel' => $prixReel,
+            'montant_paye' => $montantPaye,
+            'reste_a_payer' => $resteAPayer,
+            'Mode_peiment' => $modePaiement,
+            'formation' => $session->nom,
+            'date_debut' => $dateDebut->format('d/m/Y'),  // Ensure date is formatted correctly
+            'date_fin' => $dateFin->format('d/m/Y'),      // Ensure date is formatted correctly
+            'par' => Auth::user()->name,  // Get the name of the authenticated user
+            'signature' => 'Signature Autorisée',
+        ];
+
+        $pdf = PDF::loadView('livewire.example-laravel.receipt', $data);
+
+        return $pdf->download('reçu.pdf');
+    } catch (ModelNotFoundException $e) {
+        return response()->json(['error' => 'Étudiant ou Session non trouvé'], 404);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de la génération du reçu: ' . $e->getMessage()], 500);
     }
+}
+public function generateProfReceipt($sessionId, $profId)
+{
+    try {
+        $professeur = Professeur::findOrFail($profId);
+        $session = Sessions::findOrFail($sessionId);
+        $paiementProf = PaiementProf::where('prof_id', $profId)
+                                    ->where('session_id', $sessionId)
+                                    ->firstOrFail();
+
+        $montantPaye = $paiementProf->montant_paye;
+        $montantAPaye = $paiementProf->montant_a_paye;
+        $resteAPayer = $montantAPaye - $montantPaye;
+        $modePaiement = $paiementProf->mode ? $paiementProf->mode->nom : 'N/A';
+        $typePaiement = $paiementProf->typeymntprofs ? $paiementProf->typeymntprofs->type : 'N/A';
+
+        // Convert dates to DateTime objects
+        $dateDebut = new \DateTime($session->date_debut);
+        $dateFin = new \DateTime($session->date_fin);
+
+        $data = [
+            'date' => now()->format('d/m/Y'),
+            'nom_prenom' => $professeur->nomprenom,
+            'telephone' => $professeur->phone,
+            'formation' => $session->nom,
+            'date_debut' => $dateDebut->format('d/m/Y'),
+            'date_fin' => $dateFin->format('d/m/Y'),
+            'mode_paiement' => $modePaiement,
+            'type_paiement' => $typePaiement,
+            'montant_paye' => $montantPaye,
+            'reste_a_payer' => $resteAPayer,
+            'par' => Auth::user()->name,
+            'signature' => 'Signature Autorisée',
+        ];
+
+        $pdf = PDF::loadView('livewire.example-laravel.prof_receipt', $data);
+
+        return $pdf->download('reçu_professeur.pdf');
+    } catch (ModelNotFoundException $e) {
+        return response()->json(['error' => 'Professeur ou Session non trouvé'], 404);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de la génération du reçu: ' . $e->getMessage()], 500);
+    }
+}
+
     
     
     public function searchStudentByPhone(Request $request)

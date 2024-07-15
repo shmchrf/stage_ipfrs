@@ -74,8 +74,8 @@ Route::get('user-management', UserManagement::class)->middleware('auth')->name('
 Route::post('/sessions/{sessionId}/profs', [SessionsController::class, 'addProfToSession']);
 Route::get('/profs/search', [ProfesseurController::class, 'searchByPhoneProf']);
 Route::get('/sessions/{etudiantId}/generate-receipt/{sessionId}', [SessionsController::class, 'generateReceipt'])->name('sessions.generateReceipt');
-
-
+Route::get('/sessions/{sessionId}/generateReceipt/{etudiantId}', [SessionsController::class, 'generateReceipt'])->name('sessions.generateReceipt');
+Route::get('/sessions/{sessionId}/generateProfReceipt/{profId}', [SessionsController::class, 'generateProfReceipt'])->name('sessions.generateProfReceipt');
 // Formations routes
 Route::get('/formations', [FormationsController::class, 'liste_formation']);
 Route::post('/formations/store', [FormationsController::class, 'store']);

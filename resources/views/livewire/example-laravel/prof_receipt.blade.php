@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Reçu de Paiement</title>
+    <title>Reçu de Paiement Professeur</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -42,26 +42,23 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Reçu de Paiement</h1>
+            <h1>Reçu de Paiement Professeur</h1>
             <p>Date: {{ $date }}</p>
         </div>
         <div class="details">
             <p><strong>Nom et Prénom:</strong> {{ $nom_prenom }}</p>
-            <p><strong>Téléphone:</strong> {{ $Telephone }}</p>
+            <p><strong>Téléphone:</strong> {{ $telephone }}</p>
             <p><strong>Formation:</strong> {{ $formation }}</p>
             <p><strong>Date de Début:</strong> {{ $date_debut }}</p>
             <p><strong>Date de Fin:</strong> {{ $date_fin }}</p>
-            <p><strong>Prix Réel:</strong> {{ $prix_reel }} MRU</p>
+            <p><strong>Mode de Paiement:</strong> {{ $mode_paiement }}</p>
+            <p><strong>Type de Paiement:</strong> {{ $type_paiement }}</p>
             <p><strong>Montant Payé:</strong> {{ $montant_paye }} MRU</p>
             <p><strong>Reste à Payer:</strong> {{ $reste_a_payer }} MRU</p>
-            <p><strong>Mode de Paiement:</strong> {{ $Mode_peiment }}</p>
         </div>
         <div class="footer">
             <p><strong>Par:</strong> {{ $par }}</p>
-            <p><strong>Signature Autorisée:</strong> {{ $signature }}</p>
-        </div>
-        <div class="signature">
-            <p>Signature:</p>
+            <p><strong>Signature:</strong> {{ $signature }}</p>
         </div>
     </div>
 </body>

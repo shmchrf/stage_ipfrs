@@ -34,7 +34,10 @@ class PaiementProf extends Model
     {
         return $this->belongsTo(ModePaiement::class, 'mode_paiement_id');
     }
-
+    public function typeymntprofs()
+    {
+        return $this->belongsTo(Typeymntprofs::class, 'typeymntprofs_id');
+    }
     public function type()
     {
         return $this->belongsTo(Typeymntprofs::class, 'typeymntprofs_id');
