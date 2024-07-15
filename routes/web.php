@@ -73,6 +73,7 @@ Route::get('user-management', UserManagement::class)->middleware('auth')->name('
 
 Route::post('/sessions/{sessionId}/profs', [SessionsController::class, 'addProfToSession']);
 Route::get('/profs/search', [ProfesseurController::class, 'searchByPhoneProf']);
+Route::get('/sessions/{etudiantId}/generate-receipt/{sessionId}', [SessionsController::class, 'generateReceipt'])->name('sessions.generateReceipt');
 
 
 // Formations routes

@@ -884,6 +884,20 @@ window.addProfPaiement = function() {
                             <td>
                                 <button class="btn btn-dark" onclick="openAddPaymentModal(${content.id}, ${sessionId})"><i class="material-icons opacity-10">payment</i></button>
                                 <button class="btn btn-danger" onclick="deleteStudentFromSession(${content.id}, ${sessionId})"><i class="material-icons opacity-10">delete_forever</i></button>
+                                 @foreach($sessions as $session)
+    @foreach($session->etudiants as $etudiant)
+    
+            {{ $etudiant->nom }}</td>
+            
+                <a href="{{ route('sessions.generateReceipt', ['etudiantId' => $etudiant->id, 'sessionId' => $session->id]) }}" class="btn btn-info">
+                    <i class="material-icons opacity-10">download</i>
+                </a>
+        
+        
+    @endforeach
+@endforeach
+
+</td>
                             </td>
                         </tr>`;
                     });

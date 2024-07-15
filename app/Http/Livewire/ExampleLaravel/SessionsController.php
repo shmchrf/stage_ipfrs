@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Http\Livewire\ExampleLaravel;
 
+use PDF;
 use Illuminate\Http\Request;
 use Livewire\Component;
 use App\Models\Formations;
@@ -10,19 +10,15 @@ use App\Models\Professeur;
 use App\Models\Etudiant;
 use App\Models\Paiement;
 use App\Models\PaiementProf;
-
 use App\Models\ModePaiement;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Maatwebsite\Excel\Facades\Excel;
-
 use App\Exports\SessionsExport;
 use App\Models\Typeymntprofs;
 
 class SessionsController extends Component
 {
-
-
     public function list_session()
     {
         $sessions = Sessions::with('etudiants', 'formation')->paginate(4);
@@ -31,7 +27,7 @@ class SessionsController extends Component
         $typeymntprofs = Typeymntprofs::all();
         return view('livewire.example-laravel.sessions-management', compact('sessions', 'formations', 'modes_paiement', 'typeymntprofs'));
     }
-
+    
 
     public function getSessionDates($id)
     {
@@ -334,7 +330,7 @@ class SessionsController extends Component
 
     public function addProfPaiement(Request $request, $sessionId)
     {
-        Log::info('Received data:', $request->all());
+        Log::info('Received request:', $request->all());
 
         $request->validate([
             'prof_id' => 'required|exists:professeurs,id',
@@ -349,7 +345,7 @@ class SessionsController extends Component
 
             $paiement = new PaiementProf([
                 'prof_id' => $request->prof_id,
-                'session_id' => $sessionId,
+                'session_id' =>$sessionId,
                 'montant_paye' => $request->montant_paye,
                 'mode_paiement_id' => $request->mode_paiement,
                 'date_paiement' => $request->date_paiement,
@@ -379,13 +375,42 @@ class SessionsController extends Component
             return response()->json(['error' => 'Erreur lors de la suppression de l\'étudiant: ' . $e->getMessage()], 500);
         }
     }
-
-    public function getFormationDetails($id)
+    
+    public function generateReceipt($etudiantId, $sessionId)
     {
-        $formation = Formations::find($id);
-        return response()->json(['formation' => $formation]);
+        try {
+            $etudiant = Etudiant::findOrFail($etudiantId);
+            $session = Sessions::findOrFail($sessionId);
+            $paiement = Paiement::where('etudiant_id', $etudiantId)
+                                ->where('session_id', $sessionId)
+                                ->firstOrFail();
+    
+            // Convertir les dates en objets DateTime si elles ne le sont pas déjà
+            $dateDebut = $session->date_debut instanceof \DateTime ? $session->date_debut : new \DateTime($session->date_debut);
+            $dateFin = $session->date_fin instanceof \DateTime ? $session->date_fin : new \DateTime($session->date_fin);
+    
+            $data = [
+                'date' => now()->format('d/m/Y'),
+                'nom_prenom' => $etudiant->nomprenom,
+                'montant_paye' => $paiement->montant_paye,
+                'formation' => $session->formation->nom,
+                'date_debut' => $dateDebut->format('d/m/Y'),
+                'date_fin' => $dateFin->format('d/m/Y'),
+                'par' => 'Votre Organisation',
+                'signature' => 'Signature Autorisée',
+            ];
+    
+            $pdf = PDF::loadView('livewire.example-laravel.receipt', $data);
+    
+            return $pdf->download('reçu.pdf');
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Étudiant ou Session non trouvé'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erreur lors de la génération du reçu: ' . $e->getMessage()], 500);
+        }
     }
-
+    
+    
     public function searchStudentByPhone(Request $request)
     {
         $phone = $request->phone;
@@ -403,9 +428,6 @@ class SessionsController extends Component
         return response()->json(['isInSession' => $isInSession]);
     }
 
-
-
-
     public function store(Request $request)
     {
         $request->validate([
@@ -422,7 +444,6 @@ class SessionsController extends Component
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
-
 
     public function update(Request $request, $id)
     {
@@ -443,8 +464,7 @@ class SessionsController extends Component
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
-    
-    
+
     public function destroy($id)
     {
         try {
@@ -459,8 +479,6 @@ class SessionsController extends Component
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
-    
-
 
     public function search6(Request $request)
     {
@@ -476,7 +494,6 @@ class SessionsController extends Component
         }
     }
 
-
     public function render()
     {
         return $this->list_session();
@@ -487,4 +504,3 @@ class SessionsController extends Component
         return Excel::download(new SessionsExport(), 'sessions.xlsx');
     }
 }
-
