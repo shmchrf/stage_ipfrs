@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Livewire\ExampleLaravel;
 
 use PDF;
@@ -16,7 +17,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SessionsExport;
 use App\Models\Typeymntprofs;
-use Illuminate\Support\Facades\Auth; // Add this line
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class SessionsController extends Component
 {
@@ -28,12 +30,11 @@ class SessionsController extends Component
         $typeymntprofs = Typeymntprofs::all();
         return view('livewire.example-laravel.sessions-management', compact('sessions', 'formations', 'modes_paiement', 'typeymntprofs'));
     }
-    
 
     public function getSessionDates($id)
     {
         $session = Sessions::find($id);
-    
+
         if ($session) {
             return response()->json([
                 'start_date' => $session->date_debut,
@@ -61,7 +62,7 @@ class SessionsController extends Component
         $request->validate([
             'prof_id' => 'required|exists:professeurs,id',
             'montant_paye' => 'required|numeric',
-            'mode_paiement' => 'required|exists:modes_paiement,id',
+            'mode_paiement' => 'required|exists:mode_paiements,id',
             'date_paiement' => 'required|date',
             'montant' => 'required|numeric',
             'montant_a_paye' => 'required|numeric',
@@ -113,7 +114,7 @@ class SessionsController extends Component
 
     public function getProfSessionContents($sessionId)
     {
-        $session = Sessions::with(['professeurs' => function($query) {
+        $session = Sessions::with(['professeurs' => function ($query) {
             $query->withPivot('date_paiement');
         }, 'professeurs.paiements.mode', 'formation'])->find($sessionId);
 
@@ -121,7 +122,7 @@ class SessionsController extends Component
             return response()->json(['error' => 'Session non trouvée'], 404);
         }
 
-        $professeurs = $session->professeurs->map(function($professeur) use ($session) {
+        $professeurs = $session->professeurs->map(function ($professeur) use ($session) {
             $montantPaye = $professeur->paiements->where('session_id', $session->id)->sum('montant_paye');
             $montant = $professeur->paiements->where('session_id', $session->id)->first()->montant ?? 0;
             $montantAPaye = $professeur->paiements->where('session_id', $session->id)->first()->montant_a_paye ?? 0;
@@ -146,7 +147,7 @@ class SessionsController extends Component
             'formation_price' => $session->formation->prix,
         ]);
     }
-    
+
     public function getProfDetails($sessionId, $profId)
     {
         try {
@@ -154,11 +155,11 @@ class SessionsController extends Component
                 $query->where('session_id', $sessionId);
             }])->findOrFail($profId);
             $session = Sessions::findOrFail($sessionId);
-    
+
             $montantPaye = $professeur->paiements->sum('montant_paye');
             $prixReel = $professeur->paiements->first()->montant ?? 0;
             $resteAPayer = $prixReel - $montantPaye;
-    
+
             return response()->json([
                 'success' => true,
                 'montant' => $prixReel,
@@ -177,7 +178,7 @@ class SessionsController extends Component
     public function getTotalStudentPayments($sessionId)
     {
         $session = Sessions::findOrFail($sessionId);
-        $total = $session->etudiants->unique('id')->sum(function($etudiant) use ($sessionId) {
+        $total = $session->etudiants->unique('id')->sum(function ($etudiant) use ($sessionId) {
             return $etudiant->paiements->where('session_id', $sessionId)->sum('prix_reel');
         });
         return response()->json(['total' => $total]);
@@ -235,7 +236,7 @@ class SessionsController extends Component
 
     public function getSessionContents($sessionId)
     {
-        $session = Sessions::with(['etudiants' => function($query) {
+        $session = Sessions::with(['etudiants' => function ($query) {
             $query->withPivot('date_paiement');
         }, 'etudiants.paiements.mode', 'formation'])->find($sessionId);
 
@@ -243,7 +244,7 @@ class SessionsController extends Component
             return response()->json(['error' => 'Formation not found'], 404);
         }
 
-        $etudiants = $session->etudiants->map(function($etudiant) use ($session) {
+        $etudiants = $session->etudiants->map(function ($etudiant) use ($session) {
             $montantPaye = $etudiant->paiements->where('session_id', $session->id)->sum('montant_paye');
             $prixReel = $etudiant->paiements->where('session_id', $session->id)->first()->prix_reel ?? $session->formation->prix;
             $resteAPayer = $prixReel - $montantPaye;
@@ -301,7 +302,7 @@ class SessionsController extends Component
         $request->validate([
             'etudiant_id' => 'required|exists:etudiants,id',
             'montant_paye' => 'required|numeric',
-            'mode_paiement' => 'required|exists:modes_paiement,id',
+            'mode_paiement' => 'required|exists:mode_paiements,id',
             'date_paiement' => 'required|date',
         ]);
 
@@ -336,7 +337,7 @@ class SessionsController extends Component
         $request->validate([
             'prof_id' => 'required|exists:professeurs,id',
             'montant_paye' => 'required|numeric',
-            'mode_paiement' => 'required|exists:modes_paiement,id',
+            'mode_paiement' => 'required|exists:mode_paiements,id',
             'date_paiement' => 'required|date',
         ]);
 
@@ -346,7 +347,7 @@ class SessionsController extends Component
 
             $paiement = new PaiementProf([
                 'prof_id' => $request->prof_id,
-                'session_id' =>$sessionId,
+                'session_id' => $sessionId,
                 'montant_paye' => $request->montant_paye,
                 'mode_paiement_id' => $request->mode_paiement,
                 'date_paiement' => $request->date_paiement,
@@ -376,94 +377,110 @@ class SessionsController extends Component
             return response()->json(['error' => 'Erreur lors de la suppression de l\'étudiant: ' . $e->getMessage()], 500);
         }
     }
+
     public function generateReceipt($sessionId, $etudiantId)
-{
-    try {
-        $etudiant = Etudiant::findOrFail($etudiantId);
-        $session = Sessions::findOrFail($sessionId);
-        $paiement = Paiement::where('etudiant_id', $etudiantId)
-                            ->where('session_id', $sessionId)
-                            ->firstOrFail();
+    {
+        try {
+            $etudiant = Etudiant::findOrFail($etudiantId);
+            $session = Sessions::findOrFail($sessionId);
+            $paiement = Paiement::where('etudiant_id', $etudiantId)
+                ->where('session_id', $sessionId)
+                ->firstOrFail();
 
-        $montantPaye = $paiement->montant_paye;
-        $prixReel = $paiement->prix_reel;
-        $resteAPayer = $prixReel - $montantPaye;
-        $modePaiement = $paiement->mode->nom; // Access the mode name via the relationship
+            $montantPaye = $paiement->montant_paye;
+            $prixReel = $paiement->prix_reel;
+            $resteAPayer = $prixReel - $montantPaye;
+            $modePaiement = $paiement->mode->nom; // Access the mode name via the relationship
 
-        // Convert dates to DateTime objects
-        $dateDebut = new \DateTime($session->date_debut);
-        $dateFin = new \DateTime($session->date_fin);
+            // Convert date_paiement to Carbon instance and set timezone to Africa/Nouakchott
+            $datePaiement = Carbon::parse($paiement->date_paiement)->setTimezone('Africa/Nouakchott');
+            $datePaiementFormatted = $datePaiement->format('d/m/Y');
+            $heurePaiement = $datePaiement->format('H:i');
 
-        $data = [
-            'date' => now()->format('d/m/Y'),
-            'nom_prenom' => $etudiant->nomprenom,
-            'Telephone' => $etudiant->phone,
-            'prix_reel' => $prixReel,
-            'montant_paye' => $montantPaye,
-            'reste_a_payer' => $resteAPayer,
-            'Mode_peiment' => $modePaiement,
-            'formation' => $session->nom,
-            'date_debut' => $dateDebut->format('d/m/Y'),  // Ensure date is formatted correctly
-            'date_fin' => $dateFin->format('d/m/Y'),      // Ensure date is formatted correctly
-            'par' => Auth::user()->name,  // Get the name of the authenticated user
-            'signature' => 'Signature Autorisée',
-        ];
+            // Convert dates to DateTime objects
+            $dateDebut = new \DateTime($session->date_debut);
+            $dateFin = new \DateTime($session->date_fin);
 
-        $pdf = PDF::loadView('livewire.example-laravel.receipt', $data);
+            $data = [
+                'date' => now()->setTimezone('Africa/Nouakchott')->format('d/m/Y'),
+                'heure' => now()->setTimezone('Africa/Nouakchott')->format('H:i'),
+                'nom_prenom' => $etudiant->nomprenom,
+                'Telephone' => $etudiant->phone,
+                'prix_reel' => $prixReel,
+                'montant_paye' => $montantPaye,
+                'reste_a_payer' => $resteAPayer,
+                'Mode_peiment' => $modePaiement,
+                'formation' => $session->nom,
+                'date_debut' => $dateDebut->format('d/m/Y'),  // Ensure date is formatted correctly
+                'date_fin' => $dateFin->format('d/m/Y'),      // Ensure date is formatted correctly
+                'date_paiement' => $datePaiementFormatted,
+                'heure_paiement' => $heurePaiement,
+                'par' => Auth::user()->name,  // Get the name of the authenticated user
+                'signature' => 'Signature Autorisée',
+            ];
 
-        return $pdf->download('reçu.pdf');
-    } catch (ModelNotFoundException $e) {
-        return response()->json(['error' => 'Étudiant ou Session non trouvé'], 404);
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Erreur lors de la génération du reçu: ' . $e->getMessage()], 500);
+            $pdf = PDF::loadView('livewire.example-laravel.receipt', $data);
+
+            return $pdf->download('reçu.pdf');
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Étudiant ou Session non trouvé'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erreur lors de la génération du reçu: ' . $e->getMessage()], 500);
+        }
     }
-}
-public function generateProfReceipt($sessionId, $profId)
-{
-    try {
-        $professeur = Professeur::findOrFail($profId);
-        $session = Sessions::findOrFail($sessionId);
-        $paiementProf = PaiementProf::where('prof_id', $profId)
-                                    ->where('session_id', $sessionId)
-                                    ->firstOrFail();
 
-        $montantPaye = $paiementProf->montant_paye;
-        $montantAPaye = $paiementProf->montant_a_paye;
-        $resteAPayer = $montantAPaye - $montantPaye;
-        $modePaiement = $paiementProf->mode ? $paiementProf->mode->nom : 'N/A';
-        $typePaiement = $paiementProf->typeymntprofs ? $paiementProf->typeymntprofs->type : 'N/A';
+    public function generateProfReceipt($sessionId, $profId)
+    {
+        try {
+            $professeur = Professeur::findOrFail($profId);
+            $session = Sessions::findOrFail($sessionId);
+            $paiementProf = PaiementProf::where('prof_id', $profId)
+                ->where('session_id', $sessionId)
+                ->firstOrFail();
 
-        // Convert dates to DateTime objects
-        $dateDebut = new \DateTime($session->date_debut);
-        $dateFin = new \DateTime($session->date_fin);
+            $montantPaye = $paiementProf->montant_paye;
+            $montantAPaye = $paiementProf->montant_a_paye;
+            $resteAPayer = $montantAPaye - $montantPaye;
+            $modePaiement = $paiementProf->mode ? $paiementProf->mode->nom : 'N/A';
+            $typePaiement = $paiementProf->typeymntprofs ? $paiementProf->typeymntprofs->type : 'N/A';
 
-        $data = [
-            'date' => now()->format('d/m/Y'),
-            'nom_prenom' => $professeur->nomprenom,
-            'telephone' => $professeur->phone,
-            'formation' => $session->nom,
-            'date_debut' => $dateDebut->format('d/m/Y'),
-            'date_fin' => $dateFin->format('d/m/Y'),
-            'mode_paiement' => $modePaiement,
-            'type_paiement' => $typePaiement,
-            'montant_paye' => $montantPaye,
-            'reste_a_payer' => $resteAPayer,
-            'par' => Auth::user()->name,
-            'signature' => 'Signature Autorisée',
-        ];
+            // Convert date_paiement to Carbon instance and set timezone to Africa/Nouakchott
+            $datePaiement = Carbon::parse($paiementProf->date_paiement)->setTimezone('Africa/Nouakchott');
+            $datePaiementFormatted = $datePaiement->format('d/m/Y');
+            $heurePaiement = $datePaiement->format('H:i');
 
-        $pdf = PDF::loadView('livewire.example-laravel.prof_receipt', $data);
+            // Convert dates to DateTime objects
+            $dateDebut = new \DateTime($session->date_debut);
+            $dateFin = new \DateTime($session->date_fin);
 
-        return $pdf->download('reçu_professeur.pdf');
-    } catch (ModelNotFoundException $e) {
-        return response()->json(['error' => 'Professeur ou Session non trouvé'], 404);
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Erreur lors de la génération du reçu: ' . $e->getMessage()], 500);
+            $data = [
+                'date' => now()->setTimezone('Africa/Nouakchott')->format('d/m/Y'),
+                'heure' => now()->setTimezone('Africa/Nouakchott')->format('H:i'),
+                'nom_prenom' => $professeur->nomprenom,
+                'telephone' => $professeur->phone,
+                'formation' => $session->nom,
+                'date_debut' => $dateDebut->format('d/m/Y'),
+                'date_fin' => $dateFin->format('d/m/Y'),
+                'mode_paiement' => $modePaiement,
+                'type_paiement' => $typePaiement,
+                'montant_paye' => $montantPaye,
+                'reste_a_payer' => $resteAPayer,
+                'date_paiement' => $datePaiementFormatted,
+                'heure_paiement' => $heurePaiement,
+                'par' => Auth::user()->name,
+                'signature' => 'Signature Autorisée',
+            ];
+
+            $pdf = PDF::loadView('livewire.example-laravel.prof_receipt', $data);
+
+            return $pdf->download('reçu_professeur.pdf');
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Professeur ou Session non trouvé'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erreur lors de la génération du reçu: ' . $e->getMessage()], 500);
+        }
     }
-}
 
-    
-    
     public function searchStudentByPhone(Request $request)
     {
         $phone = $request->phone;
@@ -482,21 +499,27 @@ public function generateProfReceipt($sessionId, $profId)
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'nom' => 'required|string',
-            'date_debut' => 'required|date',
-            'date_fin' => 'required|date',
-            'formation_id' => 'required|exists:formations,id',
-        ]);
+{
+    $request->validate([
+        'nom' => 'required|string',
+        'date_debut' => 'required|date',
+        'date_fin' => 'required|date',
+        'formation_id' => 'required|exists:formations,id',
+    ]);
 
-        try {
-            $session = Sessions::create($request->all());
-            return response()->json(['success' => 'Formation créée avec succès', 'session' => $session]);
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
-        }
+    // Vérifiez si le nom existe déjà
+    if (Sessions::where('nom', $request->nom)->exists()) {
+        return response()->json(['error' => 'Le nom de session existe déjà.'], 409);
     }
+
+    try {
+        $session = Sessions::create($request->all());
+        return response()->json(['success' => 'Formation créée avec succès', 'session' => $session]);
+    } catch (\Throwable $th) {
+        return response()->json(['error' => $th->getMessage()], 500);
+    }
+}
+
 
     public function update(Request $request, $id)
     {
@@ -525,7 +548,7 @@ public function generateProfReceipt($sessionId, $profId)
             if ($session->etudiants->isNotEmpty() || $session->professeurs->isNotEmpty()) {
                 return response()->json(['status' => 400, 'message' => 'La Formation ne peut pas être supprimée car elle contient des étudiants ou des professeurs.']);
             }
-    
+
             $session->delete();
             return response()->json(['success' => 'Formation supprimée avec succès']);
         } catch (\Throwable $th) {

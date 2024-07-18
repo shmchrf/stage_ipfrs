@@ -159,4 +159,34 @@ class ProfesseurController extends Component
         $typeymntprofs = Typeymntprofs::all();
         return view('livewire.example-laravel.prof-management', compact('profs', 'countries', 'typeymntprofs'));
     }
+//     public function showDetails($profId)
+// {
+//     try {
+//         $prof = Professeur::findOrFail($profId);
+//         $sessions = $prof->sessions()->withPivot('montant_paye', 'reste_a_payer')->get();
+
+//         $sessionDetails = $sessions->map(function($session) {
+//             return [
+//                 'nom' => $session->nom,
+//                 'montant_paye' => $session->pivot->montant_paye,
+//                 'reste_a_payer' => $session->pivot->reste_a_payer
+//             ];
+//         });
+
+//         return response()->json([
+//             'prof' => [
+//                 'nomprenom' => $prof->nomprenom,
+//                 'phone' => $prof->phone
+//             ],
+//             'sessions' => $sessionDetails
+//         ]);
+//     } catch (ModelNotFoundException $e) {
+//         Log::error('Professeur non trouvé: ' . $e->getMessage());
+//         return response()->json(['error' => 'Professeur non trouvé'], 404);
+//     } catch (\Exception $e) {
+//         Log::error('Erreur lors de la récupération des détails: ' . $e->getMessage());
+//         return response()->json(['error' => 'Erreur lors de la récupération des détails: ']);
+// }
+// }
+// }
 }

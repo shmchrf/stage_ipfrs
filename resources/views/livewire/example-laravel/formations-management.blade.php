@@ -69,54 +69,52 @@
 
     <!-- Modal Ajouter Formation -->
     <div class="modal fade" id="formationAddModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ajouter une nouvelle Programme</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formation-add-form">
-                        @csrf
-                        <div class="row mb-2">
-                            <div class="col-md-6">
-                                <label for="code" class="form-label required">Code:</label>
-                                <input type="text" class="form-control" id="new-formation-code" placeholder="Code du programme"  name="code">
-                                 <div class="text-danger" id="code-warning"></div>
-
-                            </div>
-                            <div class="col-md-6">
-                                <label for="nom" class="form-label required">Nom :</label>
-                                <input type="text" class="form-control" id="new-formation-nom" placeholder="Nom du programme" name="nom">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ajouter une nouvelle Programme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formation-add-form">
+                    @csrf
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label for="code" class="form-label required">Code:</label>
+                            <input type="text" class="form-control" id="new-formation-code" placeholder="Code du programme" name="code">
+                            <div class="text-danger" id="code-warning"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="nom" class="form-label required">Nom :</label>
+                            <input type="text" class="form-control" id="new-formation-nom" placeholder="Nom du programme" name="nom">
                             <div class="text-danger" id="nom-warning"></div>
-
-                            </div>
                         </div>
-                        <br>
-                        <div class="row mb-2">
-                            <div class="col-md-6">
-                                <label for="duree" class="form-label required">Durée:</label>
-                                <input type="number" class="form-control" id="new-formation-duree" placeholder="Durée" name="duree">
+                    </div>
+                    <br>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label for="duree" class="form-label required">Durée:</label>
+                            <input type="number" class="form-control" id="new-formation-duree" placeholder="Durée" name="duree">
                             <div class="text-danger" id="duree-warning"></div>
-
-                            </div>
-                            <div class="col-md-6">
-                                <label for="prix" class="form-label required">Prix:</label>
-                                <input type="number" class="form-control" id="new-formation-prix" placeholder="Prix" name="prix">
-                            <div class="text-danger" id="prix-warning"></div>
-
-                            </div>
                         </div>
-                        
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-info" id="add-new-formation">Ajouter</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                </div>
+                        <div class="col-md-6">
+                            <label for="prix" class="form-label required">Prix:</label>
+                            <input type="number" class="form-control" id="new-formation-prix" placeholder="Prix" name="prix">
+                            <div class="text-danger" id="prix-warning"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" id="add-new-formation">Ajouter</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
         </div>
     </div>
+</div>
+
+
+
 
 
 
@@ -173,88 +171,121 @@
 
 
     <!-- Modal Ajouter Contenu -->
-    <div class="modal fade" id="contenuAddModal" tabindex="-1" aria-labelledby="contenuAddModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="contenuAddModalLabel">Ajouter un nouveau contenu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="contenu-add-form">
-                        @csrf
-                        <input type="hidden" id="formation-id-contenu" name="formation_id">
-                        <div class="mb-3">
-                            <label for="nomchap" class="form-label">Nom du Chapitre</label>
-                            <input type="text" class="form-control" id="nomchap" name="nomchap" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="nomunite" class="form-label">Nom de l'Unité</label>
-                            <input type="text" class="form-control" id="nomunite" name="nomunite" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="nombreheures" class="form-label">Nombre Heures</label>
-                            <input type="number" class="form-control" id="nombreheures" name="nombreheures" required>
-                        </div>
-                        <button type="button" class="btn btn-primary" id="add-new-contenu">Ajouter</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                    </form>
-                </div>
+    <div class="modal fade" id="contenuAddModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ajouter un nouveau Contenu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </div>
-    </div>
-
-    <!-- Modal Modifier Contenu -->
-    <!-- Modal Modifier Contenu -->
-    <div class="modal fade" id="contenuEditModal" tabindex="-1" aria-labelledby="contenuEditModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="contenuEditModalLabel">Modifier Contenu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="contenu-edit-form">
-                        @csrf
-                        <input type="hidden" id="contenu-id" name="id">
-                        <div class="mb-3">
-                            <label for="nomchap-edit" class="form-label">Nom du Chapitre</label>
-                            <input type="text" class="form-control" id="nomchap-edit" name="nomchap" required>
+            <div class="modal-body">
+                <form id="contenu-add-form">
+                    @csrf
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label for="nomchap" class="form-label required">Nom du Chapitre:</label>
+                            <input type="text" class="form-control" id="new-contenu-nomchap" placeholder="Nom du Chapitre" name="nomchap">
+                            <div class="text-danger" id="nomchap-warning"></div>
                         </div>
-                        <div class="mb-3">
-                            <label for="nomunite-edit" class="form-label">Nom de l'Unité</label>
-                            <input type="text" class="form-control" id="nomunite-edit" name="nomunite" required>
+                        <div class="col-md-6">
+                            <label for="nomunite" class="form-label required">Nom de l'Unité:</label>
+                            <input type="text" class="form-control" id="new-contenu-nomunite" placeholder="Nom de l'Unité" name="nomunite">
+                            <div class="text-danger" id="nomunite-warning"></div>
                         </div>
-                        <div class="mb-3">
-                            <label for="description-edit" class="form-label">Description</label>
-                            <textarea class="form-control" id="description-edit" name="description"></textarea>
+                    </div>
+                    <br>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label for="nombreheures" class="form-label required">Nombre Heures:</label>
+                            <input type="number" class="form-control" id="new-contenu-nombreheures" placeholder="Nombre Heures" name="nombreheures">
+                            <div class="text-danger" id="nombreheures-warning"></div>
                         </div>
-                        <div class="mb-3">
-                            <label for="nombreheures-edit" class="form-label">Nombre Heures</label>
-                            <input type="number" class="form-control" id="nombreheures-edit" name="nombreheures" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="formation_id-edit" class="form-label">Formation</label>
-                            <select class="form-control" id="formation_id-edit" name="formation_id" required>
+                        <div class="col-md-6">
+                            <label for="formation_id" class="form-label required">Formation:</label>
+                            <select class="form-control" id="new-contenu-formation_id" name="formation_id">
                                 <option value="">Sélectionner Formation</option>
                                 @foreach ($formations as $formation)
                                     <option value="{{ $formation->id }}">{{ $formation->nom }}</option>
                                 @endforeach
                             </select>
+                            <div class="text-danger" id="formation_id-warning"></div>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="update-contenu">Modifier</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                </div>
+                    </div>
+                    <br>
+                    <div class="mb-2">
+                        <label for="description" class="form-label">Description:</label>
+                        <textarea class="form-control" id="new-contenu-description" placeholder="Description" name="description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" id="add-new-contenu">Ajouter</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
         </div>
     </div>
+</div>
+
+
+
+    <!-- Modal Modifier Contenu -->
+    <!-- Modal Modifier Contenu -->
+    <div class="modal fade" id="contenuEditModal" tabindex="-1" aria-labelledby="contenuEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="contenuEditModalLabel">Modifier Contenu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="contenu-edit-form">
+                    @csrf
+                    <input type="hidden" id="contenu-id" name="id">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label for="nomchap-edit" class="form-label required">Nom du Chapitre:</label>
+                            <input type="text" class="form-control" id="nomchap-edit" name="nomchap">
+                            <div class="text-danger" id="nomchap-warning-edit"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="nomunite-edit" class="form-label required">Nom de l'Unité:</label>
+                            <input type="text" class="form-control" id="nomunite-edit" name="nomunite">
+                            <div class="text-danger" id="nomunite-warning-edit"></div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label for="nombreheures-edit" class="form-label required">Nombre Heures:</label>
+                            <input type="number" class="form-control" id="nombreheures-edit" name="nombreheures">
+                            <div class="text-danger" id="nombreheures-warning-edit"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="formation_id-edit" class="form-label required">Formation:</label>
+                            <select class="form-control" id="formation_id-edit" name="formation_id">
+                                <option value="">Sélectionner Formation</option>
+                                @foreach ($formations as $formation)
+                                    <option value="{{ $formation->id }}">{{ $formation->nom }}</option>
+                                @endforeach
+                            </select>
+                            <div class="text-danger" id="formation_id-warning-edit"></div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="mb-2">
+                        <label for="description-edit" class="form-label">Description:</label>
+                        <textarea class="form-control" id="description-edit" name="description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" id="update-contenu">Modifier</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
     <script type="text/javascript">
     $(document).ready(function () {
@@ -285,39 +316,104 @@
             });
 
         // Ajouter une formation
-        $("#add-new-formation").click(function (e) {
-            e.preventDefault();
-            let form = $('#formation-add-form')[0];
-            let data = new FormData(form);
+        $("#add-new-formation").click(function(e) {
+    e.preventDefault();
 
-            $.ajax({
-                url: "{{ route('formations.store') }}",
-                type: "POST",
-                data: data,
-                dataType: "json",
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    if (response.status == 400) {
-                        iziToast.error({
-                            title: 'Erreur',
-                            message: response.message,
-                            position: 'topRight'
-                        });
-                    } else {
-                        iziToast.success({
-                            title: 'Succès',
-                            message: response.message,
-                            position: 'topRight'
-                        });
-                        $('#formationAddModal').modal('hide');
-                        setTimeout(function () {
-                            location.reload();
-                        }, 1000);
-                    }
+    // Validation des champs requis
+    let isValid = true;
+
+    if ($('#new-formation-code').val().trim() === '') {
+        isValid = false;
+        $('#new-formation-code').addClass('is-invalid');
+        $('#code-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-formation-code').removeClass('is-invalid');
+        $('#code-warning').text('');
+    }
+
+    if ($('#new-formation-nom').val().trim() === '') {
+        isValid = false;
+        $('#new-formation-nom').addClass('is-invalid');
+        $('#nom-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-formation-nom').removeClass('is-invalid');
+        $('#nom-warning').text('');
+    }
+
+    if ($('#new-formation-duree').val().trim() === '') {
+        isValid = false;
+        $('#new-formation-duree').addClass('is-invalid');
+        $('#duree-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-formation-duree').removeClass('is-invalid');
+        $('#duree-warning').text('');
+    }
+
+    if ($('#new-formation-prix').val().trim() === '') {
+        isValid = false;
+        $('#new-formation-prix').addClass('is-invalid');
+        $('#prix-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-formation-prix').removeClass('is-invalid');
+        $('#prix-warning').text('');
+    }
+
+    if (!isValid) {
+        return;
+    }
+
+    let form = $('#formation-add-form')[0];
+    let data = new FormData(form);
+
+    $.ajax({
+        url: "{{ route('formation.store') }}",
+        type: "POST",
+        data: data,
+        dataType: "json",
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response.error) {
+                if (response.error === 'Le code de formation existe déjà.') {
+                    $('#new-formation-code').addClass('is-invalid');
+                    $('#code-warning').text(response.error);
+                } else {
+                    iziToast.error({
+                        title: 'Erreur',
+                        message: response.error,
+                        position: 'topRight'
+                    });
                 }
-            });
-        });
+            } else {
+                iziToast.success({
+                    title: 'Succès',
+                    message: response.success,
+                    position: 'topRight'
+                });
+                $('#formationAddModal').modal('hide');
+                setTimeout(function() {
+                    location.reload();
+                }, 1000);
+            }
+        },
+        error: function(xhr, status, error) {
+            if (xhr.status === 409) { // Conflit
+                $('#new-formation-code').addClass('is-invalid');
+                $('#code-warning').text(xhr.responseJSON.error);
+            } else {
+                let errorMsg = 'Une erreur est survenue : ' + error;
+                iziToast.error({
+                    title: 'Erreur',
+                    message: errorMsg,
+                    position: 'topRight'
+                });
+            }
+        }
+    });
+});
+
+
+
 
         // Modifier une formation
         $('body').on('click', '#edit-formation', function () {
@@ -434,39 +530,99 @@
         });
 
         // Ajouter un contenu
-        $("#add-new-contenu").click(function (e) {
-            e.preventDefault();
-            let form = $('#contenu-add-form')[0];
-            let data = new FormData(form);
+        $("#add-new-contenu").click(function(e) {
+    e.preventDefault();
 
-            $.ajax({
-                url: "{{ route('contenus.store') }}",
-                type: "POST",
-                data: data,
-                dataType: "json",
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    if (response.error) {
-                        iziToast.error({
-                            title: 'Erreur',
-                            message: response.error,
-                            position: 'topRight'
-                        });
-                    } else {
-                        iziToast.success({
-                            title: 'Succès',
-                            message: response.success,
-                            position: 'topRight'
-                        });
-                        $('#contenuAddModal').modal('hide');
-                        setTimeout(function () {
-                            location.reload();
-                        }, 1000);
-                    }
-                }
-            });
-        });
+    // Validation des champs requis
+    let isValid = true;
+
+    if ($('#new-contenu-nomchap').val().trim() === '') {
+        isValid = false;
+        $('#new-contenu-nomchap').addClass('is-invalid');
+        $('#nomchap-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-contenu-nomchap').removeClass('is-invalid');
+        $('#nomchap-warning').text('');
+    }
+
+    if ($('#new-contenu-nomunite').val().trim() === '') {
+        isValid = false;
+        $('#new-contenu-nomunite').addClass('is-invalid');
+        $('#nomunite-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-contenu-nomunite').removeClass('is-invalid');
+        $('#nomunite-warning').text('');
+    }
+
+    if ($('#new-contenu-nombreheures').val().trim() === '') {
+        isValid = false;
+        $('#new-contenu-nombreheures').addClass('is-invalid');
+        $('#nombreheures-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-contenu-nombreheures').removeClass('is-invalid');
+        $('#nombreheures-warning').text('');
+    }
+
+    if ($('#new-contenu-formation_id').val().trim() === '') {
+        isValid = false;
+        $('#new-contenu-formation_id').addClass('is-invalid');
+        $('#formation_id-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-contenu-formation_id').removeClass('is-invalid');
+        $('#formation_id-warning').text('');
+    }
+
+    if (!isValid) {
+        return;
+    }
+
+    let form = $('#contenu-add-form')[0];
+    let data = new FormData(form);
+
+    $.ajax({
+        url: "{{ route('contenus.store') }}",
+        type: "POST",
+        data: data,
+        dataType: "json",
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response.error) {
+                iziToast.error({
+                    title: 'Erreur',
+                    message: response.error,
+                    position: 'topRight'
+                });
+            } else {
+                iziToast.success({
+                    title: 'Succès',
+                    message: response.success,
+                    position: 'topRight'
+                });
+                $('#contenuAddModal').modal('hide');
+                setTimeout(function() {
+                    location.reload();
+                }, 1000);
+            }
+        },
+        error: function(xhr, status, error) {
+            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                $.each(xhr.responseJSON.errors, function(field, errors) {
+                    let fieldId = '#new-contenu-' + field;
+                    $(fieldId).addClass('is-invalid');
+                    $(fieldId + '-warning').text(errors.join(', '));
+                });
+            } else {
+                let errorMsg = 'Une erreur est survenue : ' + error;
+                iziToast.error({
+                    title: 'Erreur',
+                    message: errorMsg,
+                    position: 'topRight'
+                });
+            }
+        }
+    });
+});
 
         // Modifier un contenu
         // window.editContent = function(contentId) {

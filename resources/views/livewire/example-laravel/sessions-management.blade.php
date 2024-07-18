@@ -339,6 +339,7 @@
     </div>
 </div>
 
+
 <!-- Edit Session Modal -->
 <div class="modal fade" id="sessionEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -423,112 +424,160 @@ $(document).ready(function () {
     });
 
     $("#add-new-session").click(function(e){
-        e.preventDefault();
-        let form = $('#session-add-form')[0];
-        let data = new FormData(form);
+    e.preventDefault();
 
-        $.ajax({
-            url: "{{ route('session.store') }}",
-            type: "POST",
-            data: data,
-            dataType: "JSON",
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                if (response.errors) {
-                    var errorMsg = '';
-                    $.each(response.errors, function(field, errors) {
-                        $.each(errors, function(index, error) {
-                            errorMsg += error + '<br>';
-                        });
-                    });
-                    iziToast.error({
-                        message: errorMsg,
-                        position: 'topRight'
-                    });
-                } else {
-                    iziToast.success({
-                        message: response.success,
-                        position: 'topRight'
-                    });
-                    $('#sessionAddModal').modal('hide');
-                    location.reload();
-                }
-            },
-            error: function(xhr, status, error) {
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    var errorMsg = '';
-                    $.each(xhr.responseJSON.errors, function(field, errors) {
-                        $.each(errors, function(index, error) {
-                            errorMsg += error + '<br>';
-                        });
-                    });
-                    iziToast.error({
-                        message: errorMsg,
-                        position: 'topRight'
-                    });
-                } else {
-                    iziToast.error({
-                        message: 'An error occurred: ' + error,
-                        position: 'topRight'
-                    });
-                }
-            }
-        });
-    });
+    // Validation des champs requis
+    let isValid = true;
 
-    $('body').on('click', '#edit-session', function () {
-        var tr = $(this).closest('tr');
-        $('#session-id').val(tr.find("td:nth-child(1)").text());
-        $('#session-formation_id').val(tr.find("td:nth-child(2)").data('formation-id'));
-        $('#session-nom').val(tr.find("td:nth-child(3)").text());
-        $('#session-date_debut').val(tr.find("td:nth-child(4)").text());
-        $('#session-date_fin').val(tr.find("td:nth-child(5)").text());
+    if ($('#new-session-formation_id').val().trim() === '') {
+        isValid = false;
+        $('#new-session-formation_id').addClass('is-invalid');
+        $('#formation_id-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-session-formation_id').removeClass('is-invalid');
+        $('#formation_id-warning').text('');
+    }
 
-        $('#sessionEditModal').modal('show');
-    });
+    if ($('#new-session-nom').val().trim() === '') {
+        isValid = false;
+        $('#new-session-nom').addClass('is-invalid');
+        $('#nom-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-session-nom').removeClass('is-invalid');
+        $('#nom-warning').text('');
+    }
 
-    $('body').on('click', '#session-update', function () {
-        var id = $('#session-id').val();
-        var formData = new FormData($('#session-edit-form')[0]);
+    if ($('#new-session-date_debut').val().trim() === '') {
+        isValid = false;
+        $('#new-session-date_debut').addClass('is-invalid');
+        $('#date_debut-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-session-date_debut').removeClass('is-invalid');
+        $('#date_debut-warning').text('');
+    }
 
-        $.ajax({
-            url: "{{ route('session.update', '') }}/" + id,
-            type: 'POST',
-            dataType: 'json',
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                'X-HTTP-Method-Override': 'PUT'
-            },
-            success: function(response) {
-                $('#sessionEditModal').modal('hide');
-                setTimeout(function () {
-                    location.reload();
-                }, 1000);
-                if (response.success) {
-                    iziToast.success({
-                        message: response.success,
-                        position: 'topRight'
-                    });
+    if ($('#new-session-date_fin').val().trim() === '') {
+        isValid = false;
+        $('#new-session-date_fin').addClass('is-invalid');
+        $('#date_fin-warning').text('Ce champ est requis.');
+    } else {
+        $('#new-session-date_fin').removeClass('is-invalid');
+        $('#date_fin-warning').text('');
+    }
+
+    if (!isValid) {
+        return;
+    }
+
+    let form = $('#session-add-form')[0];
+    let data = new FormData(form);
+
+    $.ajax({
+        url: "{{ route('session.store') }}",
+        type: "POST",
+        data: data,
+        dataType: "JSON",
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response.error) {
+                if (response.error === 'Le nom de session existe déjà.') {
+                    $('#new-session-nom').addClass('is-invalid');
+                    $('#nom-warning').text(response.error);
                 } else {
                     iziToast.error({
+                        title: 'Erreur',
                         message: response.error,
-                        position: 'topRight',
+                        position: 'topRight'
                     });
                 }
-            },
-            error: function(xhr) {
-                var errors = xhr.responseJSON.errors;
-                if (errors) {
-                    $.each(errors, function(key, value) {
-                        $('#' + key + '-warning').text(value[0]);
-                    });
-                }
+            } else {
+                iziToast.success({
+                    message: response.success,
+                    position: 'topRight'
+                });
+                $('#sessionAddModal').modal('hide');
+                location.reload();
             }
-        });
+        },
+        error: function(xhr, status, error) {
+            if (xhr.responseJSON && xhr.responseJSON.error) {
+                if (xhr.status === 409) { // Conflit
+                    $('#new-session-nom').addClass('is-invalid');
+                    $('#nom-warning').text(xhr.responseJSON.error);
+                } else {
+                    iziToast.error({
+                        title: 'Erreur',
+                        message: xhr.responseJSON.error,
+                        position: 'topRight'
+                    });
+                }
+            } else {
+                let errorMsg = 'Une erreur est survenue : ' + error;
+                iziToast.error({
+                    title: 'Erreur',
+                    message: errorMsg,
+                    position: 'topRight'
+                });
+            }
+        }
     });
+});
+
+
+$('body').on('click', '#edit-session', function () {
+    var tr = $(this).closest('tr');
+    $('#session-id').val(tr.find("td:nth-child(1)").text());
+    $('#session-formation_id').val(tr.find("td:nth-child(2)").data('formation-id'));
+    $('#session-nom').val(tr.find("td:nth-child(3)").text());
+    $('#session-date_debut').val(tr.find("td:nth-child(4)").text());
+    $('#session-date_fin').val(tr.find("td:nth-child(5)").text());
+
+    $('#sessionEditModal').modal('show');
+});
+
+$('body').on('click', '#session-update', function () {
+    var id = $('#session-id').val();
+    var formData = new FormData($('#session-edit-form')[0]);
+
+    $.ajax({
+        url: "{{ route('session.update', '') }}/" + id,
+        type: 'POST',
+        dataType: 'json',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            'X-HTTP-Method-Override': 'PUT'
+        },
+        success: function(response) {
+            $('#sessionEditModal').modal('hide');
+            setTimeout(function () {
+                location.reload();
+            }, 1000);
+            if (response.success) {
+                iziToast.success({
+                    message: response.success,
+                    position: 'topRight'
+                });
+            } else {
+                iziToast.error({
+                    message: response.error,
+                    position: 'topRight',
+                });
+            }
+        },
+        error: function(xhr) {
+            var errors = xhr.responseJSON.errors;
+            if (errors) {
+                $.each(errors, function(key, value) {
+                    $('#' + key + '-warning').text(value[0]);
+                });
+            }
+        }
+    });
+});
+
 
     $('body').on('click', '#delete-session', function (e) {
         e.preventDefault();

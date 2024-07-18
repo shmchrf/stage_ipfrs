@@ -81,6 +81,13 @@ Route::get('/formations', [FormationsController::class, 'liste_formation']);
 Route::post('/formations/store', [FormationsController::class, 'store']);
 Route::put('/formations/{id}/update', [FormationsController::class, 'update']);
 Route::delete('/formations/{id}/delete', [FormationsController::class, 'delete_formation']);
+// routes/web.php
+Route::get('/profs/{profId}/details', [ProfesseurController::class, 'showDetails']);
+
+
+
+Route::get('/etudiants/{etudiantId}/details', [EtudiantController::class, 'getEtudiantDetails']);
+
 
 Route::delete('contenus/{id}', [ContenusFormationController::class, 'delete_contenue'])->name('contenus.delete');
 
@@ -93,7 +100,7 @@ Route::post('/etudiants/{etudiantId}/sessions/{sessionId}/add', [EtudiantControl
 Route::post('/etudiant/search', [EtudiantController::class, 'searchByPhone'])->name('etudiant.search');
 Route::post('/sessions/{sessionId}/check-student', [SessionsController::class, 'checkStudentInSession'])->name('sessions.check-student');
 Route::post('/sessions/{sessionId}/etudiants/{etudiantId}/add', [EtudiantController::class, 'addStudentToSession']);
-
+Route::get('/etudiants/{etudiantId}/details', [EtudiantController::class, 'getEtudiantDetails']);
 
 Route::get('/sessions/{sessionId}/total-student-payments', [SessionsController::class, 'getTotalStudentPayments']);
 Route::get('/sessions/{id}/dates', [SessionsController::class, 'getSessionDates']);
@@ -238,9 +245,12 @@ Route::get('formations/{id}/contents', [FormationsController::class, 'getFormati
 Route::delete('/formations/{id}/delete', [FormationsController::class, 'deleteFormation'])->name('formations.delete');
 Route::delete('/formations/{id}/confirm-delete', [FormationsController::class, 'confirmDeleteFormation'])->name('formations.confirm-delete');
 
+Route::get('/check-phone', [ProfesseurController::class, 'checkPhone'])->name('check.phone');
+Route::get('/check-email', [ProfesseurController::class, 'checkEmail'])->name('check.email');
+Route::get('/check-wtsp', [ProfesseurController::class, 'checkWtsp'])->name('check.wtsp');
 
-
-
+Route::get('etudiants/check-nni', [EtudiantController::class, 'checkNni'])->name('check.nni');
+Route::get('etudiants/check-email', [EtudiantController::class, 'checkEmail'])->name('checkprof.email');
 
 
 

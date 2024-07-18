@@ -29,7 +29,7 @@ class ContenusFormationController extends Component
             'nombreheures' => 'required|integer',
             'formation_id' => 'required|exists:formations,id',
         ]);
-
+    
         try {
             $contenu = ContenusFormation::create($request->all());
             return response()->json(['success' => 'Contenu créé avec succès', 'contenu' => $contenu]);
@@ -37,6 +37,7 @@ class ContenusFormationController extends Component
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
+    
 
     public function update(Request $request, $id)
     {
