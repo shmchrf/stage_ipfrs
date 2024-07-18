@@ -159,6 +159,34 @@ class ProfesseurController extends Component
         $typeymntprofs = Typeymntprofs::all();
         return view('livewire.example-laravel.prof-management', compact('profs', 'countries', 'typeymntprofs'));
     }
+//     public function getProfDetails($profId)
+//     {
+//         try {
+//             $prof = Professeur::with(['sessions', 'paiements'])->findOrFail($profId);
+//             $sessions = $prof->sessions->map(function ($session) use ($profId) {
+//                 $paiementProf = PaiementProf::where('prof_id', $profId)->where('session_id', $session->id)->first();
+//                 return [
+//                     'nom' => $session->nom,
+//                     'montant_paye' => $paiementProf ? $paiementProf->montant_paye : 0,
+//                     'reste_a_payer' => $paiementProf ? $paiementProf->montant_a_paye - $paiementProf->montant_paye : 0,
+//                 ];
+//             });
+
+//             return response()->json([
+//                 'prof' => [
+//                     'nomprenom' => $prof->nomprenom,
+//                     'phone' => $prof->phone,
+//                 ],
+//                 'sessions' => $sessions,
+//             ]);
+//         } catch (ModelNotFoundException $e) {
+//             return response()->json(['error' => 'Professeur non trouvé'], 404);
+//         } catch (\Exception $e) {
+//             Log::error('Erreur lors de la récupération des détails: ' . $e->getMessage());
+//             return response()->json(['error' => 'Erreur lors de la récupération des détails: ' . $e->getMessage()], 500);
+//         }
+//     }
+// }
 //     public function showDetails($profId)
 // {
 //     try {
@@ -189,4 +217,3 @@ class ProfesseurController extends Component
 // }
 // }
 // }
-}

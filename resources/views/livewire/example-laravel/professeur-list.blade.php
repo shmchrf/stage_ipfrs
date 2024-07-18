@@ -37,7 +37,8 @@
         <td>
             <a href="javascript:void(0)" id="edit-prof" data-id="{{ $prof->id }}" class="btn btn-info"><i class="material-icons opacity-10">border_color</i></a>
             <a href="javascript:void(0)" id="delete-prof" data-id="{{ $prof->id }}" class="btn btn-danger"><i class="material-icons opacity-10">delete</i></a>
-            <!-- <a href="javascript:void(0)" class="detail-prof" data-id="{{ $prof->id }}" class="btn btn-secondary"><i class="material-icons opacity-10">info</i></a> -->
+            <!-- <button class="btn btn-secondary detail-prof" data-id="{{ $prof->id }}" data-toggle="tooltip" title="Détails du Professeur">
+                    <i class="material-icons opacity-10">info</i> -->
         </td>
     </tr>
     @endforeach

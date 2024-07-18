@@ -263,27 +263,6 @@
             </div>
         </div>
     </div>
-<!-- Modal pour les détails du professeur -->
-<!-- Modal pour les détails du professeur -->
-<!-- Modal pour les détails du professeur -->
-<div class="modal fade" id="profDetailModal" tabindex="-1" aria-labelledby="profDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="profDetailModalLabel">Détails du Professeur</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="prof-details-content"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 
 
     <script type="text/javascript">
@@ -573,50 +552,70 @@ $(document).ready(function () {
         }, 2000);
     }
 });
-$(document).ready(function () {
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
+// $(document).ready(function () {
+//     $('body').on('click', '.detail-prof', function () {
+//         var profId = $(this).data('id');
+//         fetchProfDetails(profId);
+//     });
+// });
 
-    // Afficher les détails du professeur
-    $('body').on('click', '.detail-prof', function () {
-        var profId = $(this).data('id');
-        $.ajax({
-            url: `/professeurs/${profId}/details`,
-            type: 'GET',
-            success: function (response) {
-                if (response.success) {
-                    var details = `
-                        <p><strong>Nom & Prénom:</strong> ${response.prof.nomprenom}</p>
-                        <p><strong>Téléphone:</strong> ${response.prof.phone}</p>
-                        <p><strong>WhatsApp:</strong> ${response.prof.wtsp}</p>
-                        <h5>Sessions Ensignées</h5>
-                        <ul>`;
-                    response.sessions.forEach(function (session) {
-                        details += `<li>${session.nom} - Montant Payé: ${session.montant_paye} MRU - Reste à Payer: ${session.reste_a_payer} MRU</li>`;
-                    });
-                    details += `</ul>`;
-                    $('#prof-details-content').html(details);
-                    $('#profDetailModal').modal('show');
-                } else {
-                    iziToast.error({
-                        message: response.error,
-                        position: 'topRight'
-                    });
-                }
-            },
-            error: function (xhr, status, error) {
-                iziToast.error({
-                    message: 'Erreur lors de la récupération des détails: ' + error,
-                    position: 'topRight'
-                });
-            }
-        });
-    });
-});
+// function fetchProfDetails(profId) {
+//     $.ajax({
+//         url: `/profs/${profId}/details`,
+//         type: 'GET',
+//         success: function (response) {
+//             if (response.error) {
+//                 iziToast.error({ message: response.error, position: 'topRight' });
+//                 return;
+//             }
 
+//             let sessionsHtml = '';
+//             if (response.sessions.length > 0) {
+//                 sessionsHtml = response.sessions.map(session => `
+//                     <div class="row mb-2">
+//                         <div class="col-md-4"><strong>Session:</strong> ${session.nom}</div>
+//                         <div class="col-md-4"><strong>Montant Payé:</strong> ${session.montant_paye}</div>
+//                         <div class="col-md-4"><strong>Reste à Payer:</strong> ${session.reste_a_payer}</div>
+//                     </div>
+//                 `).join('');
+//             } else {
+//                 sessionsHtml = '<div class="row"><div class="col-md-12">Aucune session enseignée.</div></div>';
+//             }
+
+//             var detailsHtml = `
+//                 <div class="modal fade" id="profDetailsModal" tabindex="-1" aria-labelledby="profDetailsModalLabel" aria-hidden="true">
+//                     <div class="modal-dialog modal-lg">
+//                         <div class="modal-content">
+//                             <div class="modal-header">
+//                                 <h5 class="modal-title" id="profDetailsModalLabel">Détails du Professeur</h5>
+//                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+//                             </div>
+//                             <div class="modal-body">
+//                                 <div class="row mb-2">
+//                                     <div class="col-md-6"><strong>Nom & Prénom:</strong> ${response.prof.nomprenom}</div>
+//                                     <div class="col-md-6"><strong>Numéro de Téléphone:</strong> ${response.prof.phone}</div>
+//                                 </div>
+//                                 <hr>
+//                                 ${sessionsHtml}
+//                             </div>
+//                             <div class="modal-footer">
+//                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+//             `;
+
+//             // Remove any existing modals before appending a new one
+//             $('#profDetailsModal').remove();
+//             $('body').append(detailsHtml);
+//             $('#profDetailsModal').modal('show');
+//         },
+//         error: function (xhr, status, error) {
+//             iziToast.error({ message: 'Erreur lors de la récupération des détails: ' + error, position: 'topRight' });
+//         }
+//     });
+// }
 
 
 // $(document).ready(function() {
@@ -687,6 +686,300 @@ $(document).ready(function () {
 
 
 
+    <!-- <script type="text/javascript">
+$(document).ready(function () {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // Recherche AJAX
+    $('#search_bar').on('keyup', function(){
+        var query = $(this).val();
+        $.ajax({
+            url: "{{ route('search4') }}",
+            type: "GET",
+            data: {'search': query},
+            success: function(data){
+                $('#professors-table').html(data.html);
+            }
+        });
+    });
+
+    function validateForm(formId, warnings) {
+        let isValid = true;
+        for (let field in warnings) {
+            const input = $(formId + ' #' + field);
+            const warning = $(warnings[field]);
+            if (input.val().trim() === '') {
+                warning.text('Ce champ est requis.');
+                isValid = false;
+            } else {
+                warning.text('');
+            }
+        }
+        return isValid;
+    }
+
+    function validateAdditionalConditions() {
+        let isValid = true;
+
+        const email = $('#new-prof-email').val();
+        if (email && !validateEmail(email)) {
+            $('#email-warning').text('Veuillez entrer une adresse email valide.');
+            isValid = false;
+        } else {
+            $('#email-warning').text('');
+        }
+
+        const phone = $('#new-prof-phone').val();
+        if (phone && !validatePhoneNumber(phone)) {
+            $('#phone-warning').text('Veuillez entrer un numéro de téléphone valide (8 chiffres).');
+            isValid = false;
+        } else {
+            $('#phone-warning').text('');
+        }
+
+        return isValid;
+    }
+
+    function validateEmail(email) {
+        const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    function validatePhoneNumber(phone) {
+        const re = /^[0-9]{8}$/;
+        return re.test(String(phone));
+    }
+
+    $("#add-new-prof").click(function(e){
+        e.preventDefault();
+        if (!validateForm('#prof-add-form', {
+            'new-prof-nomprenom': '#nomprenom-warning',
+            'new-prof-country_id': '#country_id-warning',
+            'new-prof-type_id': '#type_id-warning',
+            'new-prof-genre': '#genre-warning',
+            'new-prof-phone': '#phone-warning'
+        }) || !validateAdditionalConditions()) {
+            return;
+        }
+        let form = $('#prof-add-form')[0];
+        let data = new FormData(form);
+
+        $.ajax({
+            url: "{{ route('prof.store') }}",
+            type: "POST",
+            data: data,
+            dataType: "JSON",
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.errors) {
+                    let errorMsg = '';
+                    $.each(response.errors, function(field, errors) {
+                        $.each(errors, function(index, error) {
+                            errorMsg += error + '<br>';
+                        });
+                    });
+                    iziToast.error({
+                        message: errorMsg,
+                        position: 'topRight'
+                    });
+                } else {
+                    iziToast.success({
+                        message: response.success,
+                        position: 'topRight'
+                    });
+                    $('#profAddModal').modal('hide');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                    addStudentToTable(response.prof);
+                }
+            },
+            error: function(xhr, status, error) {
+                let errorMsg = '';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    $.each(xhr.responseJSON.errors, function(field, errors) {
+                        $.each(errors, function(index, error) {
+                            errorMsg += error + '<br>';
+                        });
+                    });
+                } else {
+                    errorMsg = 'An error occurred: ' + error;
+                }
+                iziToast.error({
+                    message: errorMsg,
+                    position: 'topRight'
+                });
+            }
+        });
+    });
+
+    $('body').on('click', '#edit-prof', function () {
+        var tr = $(this).closest('tr');
+        $('#prof-id').val($(this).data('id'));
+        $('#prof-nomprenom').val(tr.find("td:nth-child(3)").text());
+        $('#prof-type_id').val(tr.find("td:nth-child(4)").data('type-id'));
+        $('#prof-country_id').val(tr.find("td:nth-child(5)").data('country-id'));
+        $('#prof-diplome').val(tr.find("td:nth-child(6)").text());
+        var genre = tr.find("td:nth-child(7)").text();
+        $('input[name="genre"][value="' + genre + '"]').prop('checked', true);
+        $('#prof-lieunaissance').val(tr.find("td:nth-child(8)").text());
+        $('#prof-adress').val(tr.find("td:nth-child(9)").text());
+        $('#prof-datenaissance').val(tr.find("td:nth-child(10)").text());
+        $('#prof-email').val(tr.find("td:nth-child(11)").text());
+        $('#prof-phone').val(tr.find("td:nth-child(12)").text());
+        $('#prof-wtsp').val(tr.find("td:nth-child(13)").text());
+        $('#imagePreview').attr('src', tr.find("td:nth-child(2) img").attr('src'));
+
+        $('#profEditModal').modal('show');
+    });
+
+    $('body').on('click', '#prof-update', function () {
+        if (!validateForm('#prof-edit-form', {
+            'prof-nomprenom': '#edit-nomprenom-warning',
+            'prof-country_id': '#edit-country_id-warning',
+            'prof-type_id': '#edit-type_id-warning',
+            'prof-phone': '#edit-phone-warning'
+        }) || !validateAdditionalConditions()) {
+            return;
+        }
+        var id = $('#prof-id').val();
+        var formData = new FormData($('#prof-edit-form')[0]);
+        formData.append('_method', 'PUT');
+
+        $.ajax({
+            url: "{{ route('prof.update', '') }}/" + id,
+            type: 'POST',
+            dataType: 'json',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $('#profEditModal').modal('hide');
+                setTimeout(function () {
+                    location.reload();
+                }, 1000);
+                if (response.success) {
+                    iziToast.success({
+                        message: response.success,
+                        position: 'topRight'
+                    });
+                    updateStudentInTable(response.prof);
+                } else {
+                    iziToast.error({
+                        message: response.error,
+                        position: 'topRight'
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                var errorMsg = '';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    $.each(xhr.responseJSON.errors, function(field, errors) {
+                        $.each(errors, function(index, error) {
+                            errorMsg += error + '<br>';
+                        });
+                    });
+                } else {
+                    errorMsg = 'An error occurred: ' + error;
+                }
+                iziToast.error({
+                    message: errorMsg,
+                    position: 'topRight'
+                });
+            }
+        });
+    });
+
+    function addStudentToTable(prof) {
+        var newRow = `<tr id="student-${prof.id}">
+            <td>${prof.id}</td>
+            <td><img src="{{ asset('images/') }}/${prof.image}" alt="" width="60px"></td>
+            <td>${prof.nomprenom}</td>
+            <td data-type-id="${prof.type_id}">${prof.type ? prof.type.type : 'N/A'}</td>
+            <td data-country-id="${prof.country_id}">${prof.country ? prof.country.name : 'N/A'}</td>
+            <td>${prof.diplome}</td>
+            <td>${prof.genre}</td>
+            <td>${prof.lieunaissance}</td>
+            <td>${prof.adress}</td>
+            <td>${prof.datenaissance}</td>
+            <td>${prof.email}</td>
+            <td>${prof.phone}</td>
+            <td>${prof.wtsp}</td>
+            <td>
+                <a href="javascript:void(0)" id="edit-prof" data-id="${prof.id}" class="btn btn-info"><i class="material-icons opacity-10">border_color</i></a>
+                <a href="javascript:void(0)" id="delete-prof" data-id="${prof.id}" class="btn btn-danger"><i class="material-icons opacity-10">delete</i></a>
+            </td>
+        </tr>`;
+        $('table tbody').append(newRow);
+    }
+
+    function updateStudentInTable(prof) {
+        var row = $('#student-' + prof.id);
+        row.find('td:nth-child(2) img').attr('src', '{{ asset("images") }}/' + prof.image);
+        row.find('td:nth-child(3)').text(prof.nomprenom);
+        row.find('td:nth-child(4)').text(prof.type ? prof.type.type : 'N/A').attr('data-type-id', prof.type_id);
+        row.find('td:nth-child(5)').text(prof.country ? prof.country.name : 'N/A').attr('data-country-id', prof.country_id);
+        row.find('td:nth-child(6)').text(prof.diplome);
+        row.find('td:nth-child(7)').text(prof.genre);
+        row.find('td:nth-child(8)').text(prof.lieunaissance);
+        row.find('td:nth-child(9)').text(prof.adress);
+        row.find('td:nth-child(10)').text(prof.datenaissance);
+        row.find('td:nth-child(11)').text(prof.email);
+        row.find('td:nth-child(12)').text(prof.phone);
+        row.find('td:nth-child(13)').text(prof.wtsp);
+    }
+
+    // Delete prof
+    $('body').on('click', '#delete-prof', function (e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        var confirmation = confirm("Êtes-vous sûr de vouloir supprimer cet étudiant ?");
+        if (confirmation) {
+            $.ajax({
+                url: "{{ route('prof.delete', '') }}/" + id,
+                type: 'DELETE',
+                success: function(response) {
+                    iziToast.success({
+                        message: response.success,
+                        position: 'topRight'
+                    });
+                    removeStudentFromTable(id);
+                },
+                error: function(xhr, status, error) {
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        iziToast.error({
+                            message: xhr.responseJSON.error,
+                            position: 'topRight'
+                        });
+                    } else {
+                        iziToast.error({
+                            message: 'An error occurred: ' + error,
+                            position: 'topRight'
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    function removeStudentFromTable(id) {
+        $(`#student-${id}`).remove();
+    }
+
+    var alertElement = document.querySelector('.fade-out');
+    if (alertElement) {
+        setTimeout(function() {
+            alertElement.style.display = 'none';
+        }, 2000);
+    }
+});
+
+    </script> -->
 
 </body>
 </html>

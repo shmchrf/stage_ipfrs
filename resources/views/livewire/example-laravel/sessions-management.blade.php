@@ -341,11 +341,11 @@
 
 
 <!-- Edit Session Modal -->
-<div class="modal fade" id="sessionEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="sessionEditModal" tabindex="-1" aria-labelledby="sessionEditModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modifier Formation</h5>
+                <h5 class="modal-title" id="sessionEditModalLabel">Modifier Session</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -354,29 +354,29 @@
                     <input type="hidden" id="session-id" name="id">
                     <div class="row mb-2">
                         <div class="col-md-6">
-                            <label for="formation_id" class="form-label required">Programme</label>
+                            <label for="session-nom" class="form-label required">Nom :</label>
+                            <input type="text" class="form-control" id="session-nom" name="nom">
+                            <div class="text-danger" id="edit-nom-warning"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="session-formation_id" class="form-label required">Formation :</label>
                             <select class="form-control" id="session-formation_id" name="formation_id">
-                                <option value="">Sélectionner Programme</option>
+                                <option value="">Sélectionner Formation</option>
                                 @foreach ($formations as $formation)
                                     <option value="{{ $formation->id }}">{{ $formation->nom }}</option>
                                 @endforeach
                             </select>
                             <div class="text-danger" id="edit-formation_id-warning"></div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="nom" class="form-label required">Nom :</label>
-                            <input type="text" class="form-control" id="session-nom" name="nom">
-                            <div class="text-danger" id="edit-nom-warning"></div>
-                        </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-6">
-                            <label for="date_debut" class="form-label required">Date début :</label>
+                            <label for="session-date_debut" class="form-label required">Date début :</label>
                             <input type="date" class="form-control" id="session-date_debut" name="date_debut">
                             <div class="text-danger" id="edit-date_debut-warning"></div>
                         </div>
                         <div class="col-md-6">
-                            <label for="date_fin" class="form-label required">Date fin:</label>
+                            <label for="session-date_fin" class="form-label required">Date fin :</label>
                             <input type="date" class="form-control" id="session-date_fin" name="date_fin">
                             <div class="text-danger" id="edit-date_fin-warning"></div>
                         </div>
@@ -525,15 +525,61 @@ $(document).ready(function () {
 });
 
 
-$('body').on('click', '#edit-session', function () {
-    var tr = $(this).closest('tr');
-    $('#session-id').val(tr.find("td:nth-child(1)").text());
-    $('#session-formation_id').val(tr.find("td:nth-child(2)").data('formation-id'));
-    $('#session-nom').val(tr.find("td:nth-child(3)").text());
-    $('#session-date_debut').val(tr.find("td:nth-child(4)").text());
-    $('#session-date_fin').val(tr.find("td:nth-child(5)").text());
+$(document).ready(function () {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 
-    $('#sessionEditModal').modal('show');
+    // Modifier une session
+    $('body').on('click', '.btn-info', function () {
+        var sessionId = $(this).data('id'); // Utilisez le data attribute pour récupérer l'ID
+        $.get('/sessions/' + sessionId, function (data) {
+            $('#session-id').val(data.session.id);
+            $('#session-formation_id').val(data.session.formation_id);
+            $('#session-nom').val(data.session.nom);
+            $('#session-date_debut').val(data.session.date_debut);
+            $('#session-date_fin').val(data.session.date_fin);
+            $('#sessionEditModal').modal('show');
+        });
+    });
+
+    $('#session-update').click(function (e) {
+        e.preventDefault();
+        let id = $('#session-id').val();
+        let form = $('#session-edit-form')[0];
+        let data = new FormData(form);
+        data.append('_method', 'PUT');
+
+        $.ajax({
+            url: '/sessions/' + id,
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.error) {
+                    iziToast.error({
+                        title: 'Erreur',
+                        message: response.error,
+                        position: 'topRight'
+                    });
+                } else {
+                    iziToast.success({
+                        title: 'Succès',
+                        message: response.success,
+                        position: 'topRight'
+                    });
+                    $('#sessionEditModal').modal('hide');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                }
+            }
+        });
+    });
 });
 
 $('body').on('click', '#session-update', function () {

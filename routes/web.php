@@ -230,6 +230,11 @@ Route::get('export/formationa', [ExportController::class, 'formationsExport'])->
 Route::get('export/contenus', [ExportController::class, 'exportContenusFormation'])->name('contenues.export');
 Route::get('export/sessions', [SessionsController::class, 'exportSessions'])->name('sessions.export');
 
+// web.php
+Route::get('/sessions/{id}', [SessionsController::class, 'show']);
+Route::put('/sessions/{id}', [SessionsController::class, 'update']);
+// web.php
+Route::get('/profs/{id}/details', [ProfesseurController::class, 'getProfDetails']);
 
 Route::get('formations-management', FormationsController::class)->middleware('auth')->name('formations-management');
 Route::put('formations/{id}', [FormationsController::class, 'update'])->middleware('auth')->name('formations.update');
